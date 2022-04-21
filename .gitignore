@@ -1,0 +1,13 @@
+
+.vs/
+
+src/UNRVLD.ODP.VisitorGroups/bin/
+
+src/UNRVLD.ODP.VisitorGroups/obj/
+/packages
+/src/DemoSite461/bin
+/src/DemoSite461/obj/Debug
+
+*.log
+
+src/DemoSite461/App_Data/Index/
