@@ -1,0 +1,63 @@
+@using EPiServer.Framework.Web.Mvc.Html
+
+@model IPageViewModel<SitePageData>
+
+<!DOCTYPE html>
+<html lang="@(Model.CurrentPage.Language)">
+<head>
+    <script type='text/javascript'>
+        var zaius = window['zaius']||(window['zaius']=[]);zaius.methods=["initialize","onload","customer","entity","event","subscribe","unsubscribe","consent","identify","anonymize","dispatch"];zaius.factory=function(e){return function(){var t=Array.prototype.slice.call(arguments);t.unshift(e);zaius.push(t);return zaius}};(function(){for(var i=0;i<zaius.methods.length;i++){var method=zaius.methods[i];zaius[method]=zaius.factory(method)}var e=document.createElement("script");e.type="text/javascript";e.async=true;e.src=("https:"===document.location.protocol?"https://":"http://")+"d1igp3oop3iho5.cloudfront.net/v2/W4WzcEs-ABgXorzY7h1LCQ/zaius-min.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)})();
+  
+        // Edits to this script should only be made below this line.
+        zaius.event('pageview');
+    </script>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=10"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Model.CurrentPage.MetaTitle</title>
+    @if (Model.CurrentPage.MetaKeywords != null && Model.CurrentPage.MetaKeywords.Count > 0)
+    {
+        <meta name="keywords" content="@string.Join(",", Model.CurrentPage.MetaKeywords)"/>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.CurrentPage.MetaDescription))
+    {
+        <meta name="description" content="@Model.CurrentPage.MetaDescription"/>
+    }
+    @Html.CanonicalLink()
+    @Html.AlternateLinks()
+    <link rel="stylesheet" href="~/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/style.min.css"/>
+    <link rel="stylesheet" href="~/css/theme.min.css"/>
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon"/>
+    @Html.RequiredClientResources("Header")
+</head>
+
+<body>
+    @if (Model.Layout.IsInReadonlyMode)
+    {
+        await Html.RenderPartialAsync("Readonly", Model);
+    }
+
+    @await Html.RenderEPiServerQuickNavigatorAsync()
+
+    @Html.FullRefreshPropertiesMetaData()
+
+    @if (!Model.Layout.HideHeader)
+    {
+        await Html.RenderPartialAsync("Header", Model);
+    }
+
+    <div class="container">
+        @RenderBody()
+    </div>
+
+    @if (!Model.Layout.HideFooter)
+    {
+        await Html.RenderPartialAsync("Footer", Model);
+    }
+
+    @Html.RequiredClientResources("Footer")
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+name: UNRVLD - Optimizely Data platform visitor groups
+
+on:
+  push:
+    branches: [ main, release/* ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  BUILD_NO: 1.0.0.${{ github.run_number }}  
+  BUILD_NO_PRE: 1.0.0-rc.${{ github.run_number }} 
+
+jobs:
+  build:
+
+    runs-on: windows-2019
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
+
+    - name: Build (Production)
+      if: github.ref == 'refs/heads/main'
+      run: dotnet build --configuration Release -p:Version=${{ env.BUILD_NO }}
+      working-directory: ./src/UNRVLD.ODP.VisitorGroups
+
+    - name: Build (Pre Release)
+      if: github.ref != 'refs/heads/main'
+      run: dotnet build --configuration Release -p:Version=${{ env.BUILD_NO_PRE }}
+      working-directory: ./src/UNRVLD.ODP.VisitorGroups
+
+    - name: Test
+      working-directory: ./src/UNRVLD.ODP.VisitorGroups
+      run: dotnet test --configuration Release  --no-build --verbosity normal
+    
+    - name: nuget push
+      if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release')
+      working-directory: ./src/UNRVLD.ODP.VisitorGroups
+      run: dotnet nuget push "**/UNRVLD.ODP.VisitorGroups*.nupkg" -k ${{ env.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/made-to-engage/index.json --skip-duplicate
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

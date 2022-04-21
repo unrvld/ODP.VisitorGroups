@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32210.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UNRVLD.ODP.VisitorGroups", "src\UNRVLD.ODP.VisitorGroups\UNRVLD.ODP.VisitorGroups.csproj", "{20C80199-4A83-465B-BB70-6A3EF79D45A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoSite", "src\DemoSite\DemoSite.csproj", "{7DA50985-CF29-49C0-9F23-80FB2C3ABB0F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F4F8E9B3-B060-4E8A-B289-5BACA671CFAA}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DemoSite461", "src\DemoSite461\DemoSite461.csproj", "{AFB17DE9-C385-4CAA-A4C5-CB051AD27C72}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{51612577-1690-4EC4-9B9A-F7EC2ABB511E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\build-visitor-groups.yml = .github\workflows\build-visitor-groups.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{20C80199-4A83-465B-BB70-6A3EF79D45A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20C80199-4A83-465B-BB70-6A3EF79D45A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20C80199-4A83-465B-BB70-6A3EF79D45A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20C80199-4A83-465B-BB70-6A3EF79D45A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DA50985-CF29-49C0-9F23-80FB2C3ABB0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DA50985-CF29-49C0-9F23-80FB2C3ABB0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DA50985-CF29-49C0-9F23-80FB2C3ABB0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DA50985-CF29-49C0-9F23-80FB2C3ABB0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AFB17DE9-C385-4CAA-A4C5-CB051AD27C72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AFB17DE9-C385-4CAA-A4C5-CB051AD27C72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AFB17DE9-C385-4CAA-A4C5-CB051AD27C72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AFB17DE9-C385-4CAA-A4C5-CB051AD27C72}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8C616679-E9D6-4B2A-A10A-FB5FC54798B0}
+	EndGlobalSection
+EndGlobal
