@@ -1,4 +1,4 @@
-# Visitor Groups for Optimizeley Data Platform
+# Visitor Groups for Optimizely Data Platform
 
 Vistor groups for the Optimizely Data platform, supports Optimizely CMS 11 and 12.
 
