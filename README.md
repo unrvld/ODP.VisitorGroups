@@ -1,4 +1,4 @@
-# Visitor Groups for Optimizley Data Platform
+# Visitor Groups for Optimizeley Data Platform
 
 Vistor groups for the Optimizely Data platform, supports Optimizely CMS 11 and 12.
 
@@ -21,7 +21,7 @@ Visitor Groups for:
 
 ## Installation
 
-Install the package directly from the Optimizley Nuget repository.
+Install the package directly from the Optimizeley Nuget repository.
 
 ``` 
 dotnet add package UNRVLD.ODP.VisitorGroups
