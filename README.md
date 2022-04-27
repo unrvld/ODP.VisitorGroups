@@ -21,7 +21,7 @@ Visitor Groups for:
 
 ## Installation
 
-Install the package directly from the Optimizeley Nuget repository.
+Install the package directly from the Optimizely Nuget repository.
 
 ``` 
 dotnet add package UNRVLD.ODP.VisitorGroups
