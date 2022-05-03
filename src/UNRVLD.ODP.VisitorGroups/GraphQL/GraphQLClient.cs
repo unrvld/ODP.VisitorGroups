@@ -14,7 +14,7 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
         public GraphQLClient(OdpVisitorGroupOptions options)
         {
             _apiKey = options.PrivateApiKey;
-            _graphQlClient = new GraphQLHttpClient(options.EndPoint, new NewtonsoftJsonSerializer());
+            _graphQlClient = new GraphQLHttpClient(options.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
         }
 
         public async Task<T> Query<T>(string query)where T : class

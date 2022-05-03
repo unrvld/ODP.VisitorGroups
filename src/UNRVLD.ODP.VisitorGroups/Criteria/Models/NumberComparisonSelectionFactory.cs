@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
-    public class ComparisonSelectionFactory : ISelectionFactory
+    public class NumberComparisonSelectionFactory : ISelectionFactory
     {
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
         {

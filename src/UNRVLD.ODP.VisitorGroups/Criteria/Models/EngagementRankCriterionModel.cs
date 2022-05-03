@@ -11,12 +11,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 #if NET5_0
         [CriterionPropertyEditor(
             Order = 10,
-            SelectionFactoryType = typeof(ComparisonSelectionFactory)
+            SelectionFactoryType = typeof(NumberComparisonSelectionFactory)
         )]
 #elif NET461_OR_GREATER
         [DojoWidget(
               WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(ComparisonSelectionFactory))]
+              SelectionFactoryType = typeof(NumberComparisonSelectionFactory))]
 #endif
         [Required]
         public string Comparison { get; set; }
