@@ -1,4 +1,4 @@
-﻿#if NET5_0
+﻿#if NET5_0_OR_GREATER
 using EPiServer.Personalization.VisitorGroups;
 using Microsoft.AspNetCore.Http;
 using System.Security.Principal;

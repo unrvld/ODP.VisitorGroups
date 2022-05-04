@@ -1,6 +1,6 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #elif NET461_OR_GREATER
 using System.Web;
@@ -22,7 +22,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         public ObservationCriterion(OdpVisitorGroupOptions optionValues, ICustomerDataRetriever customerDataRetriever) 
         {
             _optionValues = optionValues;

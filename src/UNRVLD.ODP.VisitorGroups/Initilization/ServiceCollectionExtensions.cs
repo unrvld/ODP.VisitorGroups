@@ -1,4 +1,4 @@
-﻿#if NET5_0
+﻿#if NET5_0_OR_GREATER
 using Microsoft.Extensions.DependencyInjection;
 using UNRVLD.ODP.VisitorGroups.Criteria;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;

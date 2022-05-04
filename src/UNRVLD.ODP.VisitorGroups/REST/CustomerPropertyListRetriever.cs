@@ -1,4 +1,4 @@
-﻿#if NET5_0
+﻿#if NET5_0_OR_GREATER
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -65,6 +65,7 @@ namespace UNRVLD.ODP.VisitorGroups.REST
                 }
             };
 
+            
             var httpClient = _httpClientFactory.CreateClient();
             var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
 

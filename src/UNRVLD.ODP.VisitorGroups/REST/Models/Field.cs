@@ -1,4 +1,4 @@
-﻿#if NET5_0
+﻿#if NET5_0_OR_GREATER
 using Newtonsoft.Json;
 
 namespace UNRVLD.ODP.VisitorGroups.REST.Models

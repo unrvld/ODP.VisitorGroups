@@ -8,7 +8,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 10,
             SelectionFactoryType = typeof(WinbackZoneSelectionFactory)

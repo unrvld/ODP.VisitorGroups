@@ -4,7 +4,7 @@ using EPiServer.Framework.Cache;
 using Newtonsoft.Json;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
-#if NET5_0
+#if NET5_0_OR_GREATER
 using UNRVLD.ODP.VisitorGroups.REST;
 #endif
 
@@ -15,11 +15,11 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly IGraphQLClient _graphQlClient;
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ISynchronizedObjectInstanceCache _cache;
-#if NET5_0
+#if NET5_0_OR_GREATER
         private readonly ICustomerPropertyListRetriever _customerPropertyListRetriever;
 #endif
         public CustomerDataRetriever(IGraphQLClient graphQlClient, OdpVisitorGroupOptions optionValues, ISynchronizedObjectInstanceCache cache
-#if NET5_0
+#if NET5_0_OR_GREATER
             , ICustomerPropertyListRetriever customerPropertyListRetriever
 #endif
             )
@@ -27,7 +27,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             _graphQlClient = graphQlClient;
             _optionValues = optionValues;
             _cache = cache;
-#if NET5_0
+#if NET5_0_OR_GREATER
             _customerPropertyListRetriever = customerPropertyListRetriever;
 #endif
         }
@@ -90,7 +90,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     return (Customer)cachedResult;
                 }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
                 var allFields = _customerPropertyListRetriever.GetCustomerProperties().ToList();
                 var allFieldsString = String.Join(System.Environment.NewLine, allFields.Select(x => x.name));
 #else

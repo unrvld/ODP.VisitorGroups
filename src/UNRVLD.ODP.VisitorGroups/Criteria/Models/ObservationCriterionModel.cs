@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EPiServer.Personalization.VisitorGroups;
-#if NET5_0
+#if NET5_0_OR_GREATER
 
 #elif NET461_OR_GREATER
 //using EPiServer.Personalization.VisitorGroups;
@@ -13,7 +13,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 10,
             SelectionFactoryType = typeof(ObservationTypeSelectionFactory) 
@@ -26,7 +26,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         [Required]
         public string Observation { get; set; }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 20,
             SelectionFactoryType = typeof(NumberComparisonSelectionFactory)
@@ -40,7 +40,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         public string Comparison { get; set; }
 
         [Required]
-#if NET5_0
+#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(Order = 30)]
 #endif
         [Display(Name = "Value")]

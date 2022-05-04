@@ -30,7 +30,7 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
             Task.WaitAll(response461);
 
             return response461.Result.Data;
-#elif NET5_0
+#elif NET5_0_OR_GREATER
             var response = await _graphQlClient.SendQueryAsync<T>(request);
             return response.Data;
 #endif

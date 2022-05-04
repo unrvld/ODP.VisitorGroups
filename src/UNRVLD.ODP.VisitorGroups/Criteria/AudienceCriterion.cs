@@ -2,7 +2,7 @@
 using EPiServer.Personalization.VisitorGroups;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #elif NET461_OR_GREATER
 using System.Web;
@@ -28,7 +28,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ISynchronizedObjectInstanceCache _cache;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         public AudienceCriterion(IGraphQLClient graphQlClient, OdpVisitorGroupOptions optionValues, ISynchronizedObjectInstanceCache cache)
         {
             _graphQlClient = graphQlClient;

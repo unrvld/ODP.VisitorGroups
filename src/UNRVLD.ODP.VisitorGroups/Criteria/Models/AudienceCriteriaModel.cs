@@ -1,6 +1,6 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 #elif NET461_OR_GREATER
 #endif
 
@@ -12,7 +12,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
-#if NET5_0
+#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
                AfterTextTranslationKey = "/path/to/xml",
                LabelTranslationKey = "",
