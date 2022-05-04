@@ -27,6 +27,7 @@ namespace UNRVLD.ODP
             OdpCookieName = "vuid";
             CacheTimeoutSeconds = 1;
             BaseEndPoint = "https://api.zaius.com";
+            SchemaCacheTimeoutSeconds = 86400;
         }
         /// <summary>
         /// The cookie name of the ODP cookie, should nearly always be "vuid"
@@ -44,6 +45,10 @@ namespace UNRVLD.ODP
         /// API endpoint base, can vary by region ODP is deployed into
         /// </summary>
         public string BaseEndPoint { get; set; }
+        /// <summary>
+        /// The length of time to cache schema responses for, can be relatively long lived and defaults to 24 hours
+        /// </summary>
+        public int SchemaCacheTimeoutSeconds { get; set; }
 
         public bool IsConfigured => !(string.IsNullOrEmpty(OdpCookieName) ||
                                     string.IsNullOrEmpty(BaseEndPoint) || 

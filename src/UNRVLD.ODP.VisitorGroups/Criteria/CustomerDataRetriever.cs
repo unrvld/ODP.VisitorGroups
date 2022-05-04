@@ -91,7 +91,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 }
 
 #if NET5_0
-                var allFields = _customerPropertyListRetriever.GetCustomerPropertiesAsync().Result.ToList();
+                var allFields = _customerPropertyListRetriever.GetCustomerProperties().ToList();
                 var allFieldsString = String.Join(System.Environment.NewLine, allFields.Select(x => x.name));
 #else
                 var allFieldsString = "";

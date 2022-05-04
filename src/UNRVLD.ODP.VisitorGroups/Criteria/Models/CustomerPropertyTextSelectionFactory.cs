@@ -22,7 +22,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         {
             IList<SelectListItem> items = new List<SelectListItem>();
 
-            var customerFields = _customerPropertyListRetriever.GetCustomerPropertiesAsync().Result;
+            var customerFields = _customerPropertyListRetriever.GetCustomerProperties();
             foreach (var customerField in customerFields)
             {
                 if (customerField.type == "string")
