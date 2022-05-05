@@ -46,6 +46,9 @@
 
 		<PackageReference Include="EPiServer.Framework" Version="[11.17.0,12)" Condition=" '$(TargetFramework)' == 'net461' " />
 		<PackageReference Include="EPiServer.Framework.AspNet" Version="[11.17.0,12)" Condition=" '$(TargetFramework)' == 'net461' " />
+		
+		<PackageReference Include="Microsoft.Extensions.Http" Version="[6.0.0,7)" Condition=" '$(TargetFramework)' == 'net461' " />
+		
 		<PackageReference Include="GraphQL.Client" Version="4.0.2" />
 		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />

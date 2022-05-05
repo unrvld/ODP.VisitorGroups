@@ -1,11 +1,15 @@
-﻿#if NET5_0_OR_GREATER
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using EPiServer.Personalization.VisitorGroups;
 using EPiServer.ServiceLocation;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using UNRVLD.ODP.VisitorGroups.REST;
+
+#if NET5_0_OR_GREATER
+using Microsoft.AspNetCore.Mvc.Rendering;
+#elif NET461_OR_GREATER
+using System.Web.Mvc;
+#endif
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
@@ -35,4 +39,3 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         }
     }
 }
-#endif

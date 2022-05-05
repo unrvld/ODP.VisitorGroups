@@ -20,45 +20,22 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
+        private readonly IODPUserProfile _odpUserProfile;
 
 #if NET5_0_OR_GREATER
-        public EngagementRankCriterion(OdpVisitorGroupOptions optionValues, ICustomerDataRetriever customerDataRetriever) 
+        public EngagementRankCriterion(OdpVisitorGroupOptions optionValues, 
+                ICustomerDataRetriever customerDataRetriever,
+                IODPUserProfile odpUserProfile) 
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
+            _odpUserProfile = odpUserProfile;
         }
 
+        
         public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
         {
-            try
-            {
-                if (_optionValues.IsConfigured == false)
-                {
-                    return false;
-                }
-
-                if (httpContext.Request.Cookies.ContainsKey(_optionValues.OdpCookieName))
-                {
-                    var vuidValue = httpContext.Request.Cookies[_optionValues.OdpCookieName];
-                    if (!string.IsNullOrWhiteSpace(vuidValue))
-                    {
-                        vuidValue = vuidValue.Substring(0, 36).Replace("-", "");
-                    }
-
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
-
-                    return CompareMe(customer.Insights?.EngagementRank, Model.Comparison);
-                }
-            }
-            catch
-            {
-                return false;
-            }
-            return false;
+            return this.IsMatchInner(principal, httpContext);
         }
 
 #elif NET461_OR_GREATER
@@ -66,17 +43,28 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
+            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 
         public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
         {
+            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
+        }
+
+#endif
+
+        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+        {
             try
             {
-                var cookie = httpContext.Request.Cookies[_optionValues.OdpCookieName];
-                if (cookie != null)
+                if (_optionValues.IsConfigured == false)
                 {
-                    var vuidValue = cookie.Value.Substring(0, 36).Replace("-", "");
+                    return false;
+                }
+                var vuidValue = _odpUserProfile.DeviceId;
 
+                if (!string.IsNullOrEmpty(vuidValue))
+                {
                     var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
                     if (customer == null)
                     {
@@ -92,8 +80,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             }
             return false;
         }
-
-#endif
 
         private bool CompareMe(decimal? value, string comparison)
         {

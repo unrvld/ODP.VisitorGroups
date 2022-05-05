@@ -1,5 +1,4 @@
-﻿#if NET5_0_OR_GREATER
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace UNRVLD.ODP.VisitorGroups.REST.Models
 {
@@ -15,4 +14,3 @@ namespace UNRVLD.ODP.VisitorGroups.REST.Models
         public string type { get; set; }
     }
 }
-#endif

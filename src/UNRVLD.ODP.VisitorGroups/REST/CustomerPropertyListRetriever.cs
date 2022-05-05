@@ -1,11 +1,19 @@
-﻿#if NET5_0_OR_GREATER
-using System;
+﻿using System;
 using System.Collections.Generic;
+
 using System.Net.Http;
+
+#if NET5_0_OR_GREATER
 using System.Text.Json;
+
+#elif NET461_OR_GREATER
+using Newtonsoft.Json;
+#endif
+
 using System.Threading.Tasks;
 using EPiServer.Framework.Cache;
 using UNRVLD.ODP.VisitorGroups.REST.Models;
+using System.IO;
 
 namespace UNRVLD.ODP.VisitorGroups.REST
 {
@@ -15,18 +23,14 @@ namespace UNRVLD.ODP.VisitorGroups.REST
         private readonly OdpVisitorGroupOptions _options;
         private readonly ISynchronizedObjectInstanceCache _cache;
 
-        public CustomerPropertyListRetriever(IHttpClientFactory httpClientFactory, OdpVisitorGroupOptions options, ISynchronizedObjectInstanceCache cache)
+        public CustomerPropertyListRetriever(IHttpClientFactory httpClientFactory, 
+            OdpVisitorGroupOptions options, 
+            ISynchronizedObjectInstanceCache cache)
         {
             _httpClientFactory = httpClientFactory;
             _options = options;
             _cache = cache;
         }
-
-        //public CustomerPropertyListRetriever()
-        //{
-        //    _httpClientFactory = ServiceLocator.Current.GetInstance<IHttpClientFactory>();
-        //    _options = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
-        //}
 
         public IEnumerable<Field> GetCustomerProperties()
         {
@@ -55,7 +59,9 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
         private async Task<IEnumerable<Field>> GetCustomerPropertiesAsync()
         {
-            var httpRequestMessage = new HttpRequestMessage(
+            CustomerFieldsResponse customerFields;
+
+            using (var httpRequestMessage = new HttpRequestMessage(
                 HttpMethod.Get,
                 _options.BaseEndPoint + "/v3/schema/objects/customers")
             {
@@ -63,29 +69,34 @@ namespace UNRVLD.ODP.VisitorGroups.REST
                 {
                     { "x-api-key", _options.PrivateApiKey }
                 }
-            };
-
-            
-            var httpClient = _httpClientFactory.CreateClient();
-            var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage);
-
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                using var contentStream =
-                    await httpResponseMessage.Content.ReadAsStreamAsync();
-
-                var customerFields = await JsonSerializer.DeserializeAsync
-                    <CustomerFieldsResponse>(contentStream);
-
-                if (customerFields != null)
+            })    
+                using(var httpClient = _httpClientFactory.CreateClient())
+                using(var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage))
+                { 
+                if (httpResponseMessage.IsSuccessStatusCode)
                 {
-                    return customerFields.fields;
+                    using (var contentStream =
+                        await httpResponseMessage.Content.ReadAsStreamAsync())
+                    
+    #if NET5_0_OR_GREATER
+                    customerFields = await JsonSerializer.DeserializeAsync
+                        <CustomerFieldsResponse>(contentStream);
+    #elif NET461_OR_GREATER
+                    using (var sr = new StreamReader(contentStream))
+                    using (var reader = new JsonTextReader(sr))
+                    {
+                        var serializer = new JsonSerializer();
+                        customerFields = serializer.Deserialize<CustomerFieldsResponse>(reader);
+                    }
+    #endif
+                    if (customerFields != null)
+                    {
+                        return customerFields.fields;
+                    }
                 }
+
+                return null;
             }
-
-            return null;
         }
-
     }
 }
-#endif
