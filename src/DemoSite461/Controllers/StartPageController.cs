@@ -1,6 +1,8 @@
 using System.Web.Mvc;
 using DemoSite.Models.Pages;
 using DemoSite.Models.ViewModels;
+using EPiServer.ServiceLocation;
+using EPiServer.Shell.Security;
 using EPiServer.Web;
 using EPiServer.Web.Mvc;
 
@@ -23,8 +25,16 @@ namespace DemoSite.Controllers
                 editHints.AddConnection(m => m.Layout.CustomerZonePages, p => p.CustomerZonePageLinks);
             }
 
-            return View(model);
-        }
+            /*
+            var userManager = ServiceLocator.Current.GetInstance<UIUserManager>();
+            var userProvider = ServiceLocator.Current.GetInstance<UIUserProvider>();
+            var user = userProvider.GetUser("admin");
+            userManager.UnlockUser(user);
+            userManager.ResetPassword(user, "Welcome123!");
+            */
 
+            return View(model);
+
+        }
     }
 }

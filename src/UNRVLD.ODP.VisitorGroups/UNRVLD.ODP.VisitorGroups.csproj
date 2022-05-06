@@ -18,7 +18,10 @@
 	  </ReleaseNotes>
 
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
+	  
+	  <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	  <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	  
 	  <RestoreSources>
 		  $(RestoreSources);
 		  https://api.nuget.org/v3/index.json;
@@ -48,17 +51,32 @@
 		<PackageReference Include="EPiServer.Framework.AspNet" Version="[11.17.0,12)" Condition=" '$(TargetFramework)' == 'net461' " />
 		
 		<PackageReference Include="Microsoft.Extensions.Http" Version="[6.0.0,7)" Condition=" '$(TargetFramework)' == 'net461' " />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.0,7)" Condition=" '$(TargetFramework)' == 'net461' " />
+
 		
 		<PackageReference Include="GraphQL.Client" Version="4.0.2" />
 		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2" />
 		<PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
 		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-		
-	 </ItemGroup>
+
+		<PackageReference Include="RestSharp" Version="107.3.0" />
+
+		<PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0.0" />
+
+	</ItemGroup>
     
 
 	<ItemGroup>
 	  <Folder Include="GraphQL\Model\" />
 	</ItemGroup>
-
+<!--
+	<runtime>
+		<assemblyBinding xmlns="urn:schemas-microsoft-com:asm.v1">
+			<dependentAssembly>
+				<assemblyIdentity name="Microsoft.Bcl.AsyncInterfaces" publicKeyToken="cc7b13ffcd2ddd51" culture="neutral" />
+				<bindingRedirect oldVersion="0.0.0.0-6.0.0.0" newVersion="6.0.0.0" />
+			</dependentAssembly>
+		</assemblyBinding>
+	</runtime>
+-->
 </Project>

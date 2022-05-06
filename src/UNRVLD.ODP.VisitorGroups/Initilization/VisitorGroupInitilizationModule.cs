@@ -6,6 +6,8 @@ using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.Criteria;
 using UNRVLD.ODP.VisitorGroups.REST;
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UNRVLD.ODP.VisitorGroups.Initilization
 {

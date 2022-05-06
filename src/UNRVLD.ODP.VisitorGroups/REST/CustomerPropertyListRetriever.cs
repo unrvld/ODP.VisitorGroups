@@ -1,33 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using System.Net.Http;
-
-#if NET5_0_OR_GREATER
-using System.Text.Json;
-
-#elif NET461_OR_GREATER
-using Newtonsoft.Json;
-#endif
-
 using System.Threading.Tasks;
 using EPiServer.Framework.Cache;
 using UNRVLD.ODP.VisitorGroups.REST.Models;
-using System.IO;
+
+using RestSharp;
+using System.Linq;
+using System.Threading;
 
 namespace UNRVLD.ODP.VisitorGroups.REST
 {
     public class CustomerPropertyListRetriever : ICustomerPropertyListRetriever
     {
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly RestClient _restClient;
         private readonly OdpVisitorGroupOptions _options;
         private readonly ISynchronizedObjectInstanceCache _cache;
 
-        public CustomerPropertyListRetriever(IHttpClientFactory httpClientFactory, 
+        public CustomerPropertyListRetriever(//RestClient restClient, 
             OdpVisitorGroupOptions options, 
             ISynchronizedObjectInstanceCache cache)
         {
-            _httpClientFactory = httpClientFactory;
+            _restClient = new RestClient(options.BaseEndPoint);
             _options = options;
             _cache = cache;
         }
@@ -41,9 +35,9 @@ namespace UNRVLD.ODP.VisitorGroups.REST
                 return (IEnumerable<Field>)cachedResult;
             }
 
-            var apiResult = GetCustomerPropertiesAsync().Result;
+            var apiResult = GetCustomerPropertiesRequest();
 
-            if (apiResult == null)
+            if (apiResult == null || !apiResult.Any())
             {
                 return null;
             }
@@ -57,44 +51,18 @@ namespace UNRVLD.ODP.VisitorGroups.REST
             return apiResult;
         }
 
-        private async Task<IEnumerable<Field>> GetCustomerPropertiesAsync()
+        private IEnumerable<Field> GetCustomerPropertiesRequest()
         {
-            CustomerFieldsResponse customerFields;
+            try
+            { 
+                var request = new RestRequest("/v3/schema/objects/customers");
+                request.AddHeader("x-api-key", _options.PrivateApiKey);
 
-            using (var httpRequestMessage = new HttpRequestMessage(
-                HttpMethod.Get,
-                _options.BaseEndPoint + "/v3/schema/objects/customers")
+                var response =  _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
+
+                return response?.fields ?? Enumerable.Empty<Field>();
+            } catch (Exception ex)
             {
-                Headers =
-                {
-                    { "x-api-key", _options.PrivateApiKey }
-                }
-            })    
-                using(var httpClient = _httpClientFactory.CreateClient())
-                using(var httpResponseMessage = await httpClient.SendAsync(httpRequestMessage))
-                { 
-                if (httpResponseMessage.IsSuccessStatusCode)
-                {
-                    using (var contentStream =
-                        await httpResponseMessage.Content.ReadAsStreamAsync())
-                    
-    #if NET5_0_OR_GREATER
-                    customerFields = await JsonSerializer.DeserializeAsync
-                        <CustomerFieldsResponse>(contentStream);
-    #elif NET461_OR_GREATER
-                    using (var sr = new StreamReader(contentStream))
-                    using (var reader = new JsonTextReader(sr))
-                    {
-                        var serializer = new JsonSerializer();
-                        customerFields = serializer.Deserialize<CustomerFieldsResponse>(reader);
-                    }
-    #endif
-                    if (customerFields != null)
-                    {
-                        return customerFields.fields;
-                    }
-                }
-
                 return null;
             }
         }
