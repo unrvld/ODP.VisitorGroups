@@ -4,6 +4,7 @@ using System.Linq;
 using EPiServer.Personalization.VisitorGroups;
 using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.REST;
+using UNRVLD.ODP.VisitorGroups.REST.Models;
 
 #if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -26,7 +27,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         {
             IList<SelectListItem> items = new List<SelectListItem>();
 
-            var customerFields = _customerPropertyListRetriever.GetCustomerProperties();
+            var customerFields = _customerPropertyListRetriever.GetCustomerProperties() ?? Enumerable.Empty<Field>();
             foreach (var customerField in customerFields)
             {
                 if (customerField.type == "number")

@@ -33,6 +33,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             try
             {
+                if (!_optionValues.IsConfigured)
+                {
+                    return null;
+                }
+
+
                 var cacheKey = $"odp_rts_customer_{vuidValue}";
                 var cachedResult = _cache.Get(cacheKey);
                 if (cachedResult != null)
@@ -80,6 +86,11 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             try
             {
+                if (!_optionValues.IsConfigured)
+                {
+                    return null;
+                }
+
                 var cacheKey = $"odp_rts_customer_dynamic_{vuidValue}";
                 var cachedResult = _cache.Get(cacheKey);
                 if (cachedResult != null)

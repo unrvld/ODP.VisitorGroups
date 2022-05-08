@@ -9,16 +9,23 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
     {
         private readonly string _apiKey;
         private readonly GraphQLHttpClient _graphQlClient;
+        private readonly OdpVisitorGroupOptions _options;
         private bool disposedValue;
 
         public GraphQLClient(OdpVisitorGroupOptions options)
         {
             _apiKey = options.PrivateApiKey;
+            _options = options;
             _graphQlClient = new GraphQLHttpClient(options.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
         }
 
         public async Task<T> Query<T>(string query)where T : class
         {
+            if (!_options.IsConfigured)
+            {
+                return default;
+            }
+
             var request = new AuthencatedGraphQLHttpRequest(this._apiKey)
             {
                 Query = query
