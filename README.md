@@ -12,6 +12,7 @@ Visitor Groups for:
 - Engagement Rank
 - Order Likelihood
 - Winback zone
+- Customer Properties (Text/Numeric)
 - Observation
   - Total Revenue
   - Order Count
@@ -30,7 +31,7 @@ dotnet add package UNRVLD.ODP.VisitorGroups
 Install-Package UNRVLD.ODP.VisitorGroups
 ```
 
-## Configuration (.NET 5.0)
+## Configuration (.NET 5.0/6.0)
 
 *Startup.cs*
 ``` c#
@@ -47,7 +48,7 @@ All settings are optional, apart from the PrivateApiKey
       "OdpVisitorGroupOptions": {
          "OdpCookieName": "vuid",
          "CacheTimeoutSeconds": 10,
-         "EndPoint": "https://api.zaius.com/v3/graphql",
+         "BaseEndPoint": "https://api.zaius.com",
          "PrivateApiKey": "key-lives-here"
        }
    }
@@ -63,9 +64,17 @@ All settings are optional, apart from the PrivateApiKey
   <appSettings>
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.OdpCookieName, UNRVLD.ODP.VisitorGroups" value="vuid" />
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.CacheTimeoutSeconds, UNRVLD.ODP.VisitorGroups" value="1" />
-    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.EndPoint, UNRVLD.ODP.VisitorGroups" value="https://api.zaius.com/v3/graphql" />
+    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.BaseEndPoint, UNRVLD.ODP.VisitorGroups" value="https://api.zaius.com" />
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.PrivateApiKey, UNRVLD.ODP.VisitorGroups" value="key-lives-here" />
   </appSettings>
 ```
 
 You can also manage these with the [options admin module](https://world.optimizely.com/blogs/grzegorz-wiechec/dates/2020/3/configuring-options-from-admin-mode/) 
+
+ ---
+ ## Version History
+
+ |Version| Details|
+ |:---|:---------------|
+ |1.0|Initial Release|
+ |1.1|Add new criterion (Customer Properties)<br/>Support for .net6|

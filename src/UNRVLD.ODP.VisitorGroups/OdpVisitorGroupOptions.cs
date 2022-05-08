@@ -13,7 +13,7 @@ namespace UNRVLD.ODP
     ///        "OdpVisitorGroupOptions": {
     ///            "OdpCookieName": "vuid",
     ///            "CacheTimeoutSeconds": 10,
-    ///            "EndPoint": "https:///api.zaius.com/v3/graphql",
+    ///            "BaseEndPoint": "https:///api.zaius.com",
     ///            "PrivateApiKey": "key-lives-here"
     ///        }
     ///    }
