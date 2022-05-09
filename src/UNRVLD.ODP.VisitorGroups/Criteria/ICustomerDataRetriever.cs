@@ -5,5 +5,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     public interface ICustomerDataRetriever
     { 
         Customer GetCustomerInfo(string vuidValue);
+
+        dynamic GetCustomerInfoDynamic(string vuidValue);
     }
 }

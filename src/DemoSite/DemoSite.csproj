@@ -2,10 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>disable</Nullable>
+    <UserSecretsId>2a3dc6de-40c9-422e-8226-46cc8caa54a9</UserSecretsId>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="EPiServer.CMS" Version="12.3.2" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Wangkanai.Detection" Version="2.0.1" />
   </ItemGroup>
   

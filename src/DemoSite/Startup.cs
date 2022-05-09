@@ -4,6 +4,8 @@ using DemoSite.Extensions;
 using EPiServer.Cms.Shell;
 using EPiServer.Cms.UI.AspNetIdentity;
 using EPiServer.Scheduler;
+using EPiServer.ServiceLocation;
+using EPiServer.Shell.Security;
 //using EPiServer.ServiceLocation;
 using EPiServer.Web.Routing;
 using Microsoft.AspNetCore.Builder;
@@ -60,6 +62,14 @@ namespace DemoSite
             {
                 endpoints.MapContent();
             });
+
+            /*
+            var userManager = ServiceLocator.Current.GetInstance<UIUserManager>();
+            var userProvider = ServiceLocator.Current.GetInstance<UIUserProvider>();
+            var user = userProvider.GetUserAsync("admin").Result;
+            var f = userManager.UnlockUserAsync(user).Result;
+            var g = userManager.ResetPasswordAsync(user, "Welcome123!").Result;
+            */
         }
     }
 }

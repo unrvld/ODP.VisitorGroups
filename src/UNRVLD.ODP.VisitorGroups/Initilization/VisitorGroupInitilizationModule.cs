@@ -5,6 +5,9 @@ using EPiServer.Framework.Initialization;
 using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.Criteria;
+using UNRVLD.ODP.VisitorGroups.REST;
+using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UNRVLD.ODP.VisitorGroups.Initilization
 {
@@ -24,6 +27,9 @@ namespace UNRVLD.ODP.VisitorGroups.Initilization
             // Full information here: https://world.optimizely.com/documentation/Release-Notes/ReleaseNote/?releaseNoteId=CMS-15875
 
             services.AddScoped<IGraphQLClient, GraphQLClient>();
+            services.AddScoped<ICustomerDataRetriever, CustomerDataRetriever>();
+            services.AddScoped<ICustomerPropertyListRetriever, CustomerPropertyListRetriever>();
+            services.AddHttpContextOrThreadScoped<IODPUserProfile, ODPUserProfile>();
         }
 
         public void Initialize(InitializationEngine context)

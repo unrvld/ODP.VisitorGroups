@@ -2,7 +2,7 @@
 using EPiServer.Personalization.VisitorGroups;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #elif NET461_OR_GREATER
 using System.Web;
@@ -27,40 +27,23 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly IGraphQLClient _graphQlClient;
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ISynchronizedObjectInstanceCache _cache;
+        private readonly IODPUserProfile _odpUserProfile;
 
-#if NET5_0
-        public AudienceCriterion(IGraphQLClient graphQlClient, OdpVisitorGroupOptions optionValues, ISynchronizedObjectInstanceCache cache)
+#if NET5_0_OR_GREATER
+        public AudienceCriterion(IGraphQLClient graphQlClient, 
+                                OdpVisitorGroupOptions optionValues, 
+                                ISynchronizedObjectInstanceCache cache,
+                                IODPUserProfile odpUserProfile)
         {
             _graphQlClient = graphQlClient;
             _optionValues = optionValues;
             _cache = cache;
+            _odpUserProfile = odpUserProfile;
         }
 
         public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
         {
-            try
-            {
-                if (_optionValues.IsConfigured == false)
-                {
-                    return false;
-                }
-
-                if (httpContext.Request.Cookies.ContainsKey(_optionValues.OdpCookieName))
-                {
-                    var vuidValue = httpContext.Request.Cookies[_optionValues.OdpCookieName];
-                    if (!string.IsNullOrWhiteSpace(vuidValue))
-                    {
-                        vuidValue = vuidValue.Substring(0, 36).Replace("-", "");
-                    }
-
-                    return IsInAudience(vuidValue, Model.Audience);
-                }
-            }
-            catch
-            {
-                return false;
-            }
-            return false;
+            return this.IsMatchInner(principal, httpContext);
         }
 
 #elif NET461_OR_GREATER
@@ -69,9 +52,15 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             _graphQlClient = ServiceLocator.Current.GetInstance<IGraphQLClient>();
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
             _cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
+            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 
         public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
+        {
+            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
+        }
+#endif
+        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
         {
             try
             {
@@ -79,11 +68,10 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 {
                     return false;
                 }
+                var vuidValue = _odpUserProfile.DeviceId;
 
-                var cookie = httpContext.Request.Cookies[_optionValues.OdpCookieName];
-                if (cookie != null && !string.IsNullOrEmpty(cookie.Value))
+                if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var vuidValue = cookie.Value.Substring(0, 36).Replace("-", "");
                     return IsInAudience(vuidValue, Model.Audience);
                 }
             }
@@ -93,9 +81,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             }
             return false;
         }
-
-#endif
-
         private bool IsInAudience(string vuidValue, string audience)
         {
             try

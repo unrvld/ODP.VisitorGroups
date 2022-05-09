@@ -1,6 +1,6 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc.Rendering;
 #elif NET461_OR_GREATER
 using System.Web.Mvc;

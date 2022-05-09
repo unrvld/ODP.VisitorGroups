@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_NO: 1.0.0.${{ github.run_number }}  
-  BUILD_NO_PRE: 1.0.0-rc.${{ github.run_number }} 
+  BUILD_NO: 1.1.0.${{ github.run_number }}  
+  BUILD_NO_PRE: 1.1.0-rc.${{ github.run_number }} 
 
 jobs:
   build:
@@ -22,7 +22,9 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: |
+            5.0.x
+            6.0.x
 
     - name: Build (Production)
       if: github.ref == 'refs/heads/main'

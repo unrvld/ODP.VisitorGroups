@@ -1,6 +1,6 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0
+#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc.Rendering;
 #elif NET461_OR_GREATER
 using System.Web.Mvc;
@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
-    public class ComparisonSelectionFactory : ISelectionFactory
+    public class NumberComparisonSelectionFactory : ISelectionFactory
     {
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
         {

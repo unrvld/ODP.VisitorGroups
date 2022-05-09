@@ -1,4 +1,8 @@
-﻿using EPiServer.Personalization.VisitorGroups;
+﻿
+using EPiServer.Personalization.VisitorGroups;
+
+using System.Security.Principal;
+using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
 #if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
@@ -7,26 +11,24 @@ using System.Web;
 using EPiServer.ServiceLocation;
 #endif
 
-using System.Security.Principal;
-using UNRVLD.ODP.VisitorGroups.Criteria.Models;
-
 namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
     [VisitorGroupCriterion(
         Category = "Data platform",
-        Description = "Query specific observations about the current user (calculated every 24 hours)",
-        DisplayName = "Observation"
+        Description = "Query customer number fields",
+        DisplayName = "Customer property (number)"
     )]
-    public class ObservationCriterion : CriterionBase<ObservationCriterionModel>
+    public class CustomerPropertyNumberCriterion : CriterionBase<CustomerPropertyNumberCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
         private readonly IODPUserProfile _odpUserProfile;
 
+
 #if NET5_0_OR_GREATER
-        public ObservationCriterion(OdpVisitorGroupOptions optionValues, 
-                            ICustomerDataRetriever customerDataRetriever,
-                            IODPUserProfile odpUserProfile) 
+        public CustomerPropertyNumberCriterion(OdpVisitorGroupOptions optionValues, 
+                                               ICustomerDataRetriever customerDataRetriever,
+                                               IODPUserProfile odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
@@ -39,10 +41,10 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         }
 
 #elif NET461_OR_GREATER
-        public ObservationCriterion()
+        public CustomerPropertyNumberCriterion()
         {
-            _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
+            _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
             _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 
@@ -52,7 +54,8 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         }
 #endif
 
-        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+
+        public bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
         {
             try
             {
@@ -65,24 +68,22 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfoDynamic(vuidValue);
                     if (customer == null)
                     {
                         return false;
                     }
 
                     var isMatch = false;
-                    switch (Model.Observation)
+
+                    var rawValue = (customer[Model.PropertyName] as Newtonsoft.Json.Linq.JValue)?.Value;
+                    if (rawValue != null)
                     {
-                        case "TotalRevenue":
-                            isMatch = CompareMe(customer.Observations?.TotalRevenue, Model.Comparison);
-                            break;
-                        case "OrderCount":
-                            isMatch = CompareMe(customer.Observations?.OrderCount, Model.Comparison);
-                            break;
-                        case "AverageOrderRevenue":
-                            isMatch = CompareMe(customer.Observations?.AverageOrderRevenue, Model.Comparison);
-                            break;
+                        decimal propertyValue;
+                        if (decimal.TryParse(rawValue.ToString(), out propertyValue))
+                        {
+                            isMatch = CompareMe(propertyValue, Model.Comparison);
+                        }
                     }
 
                     return isMatch;
@@ -95,21 +96,16 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             return false;
         }
 
-        private bool CompareMe(decimal? value, string comparison)
+        private bool CompareMe(decimal value, string comparison)
         {
-            if (value == null)
-            {
-                return false;
-            }
-
             switch (comparison)
             {
                 case "LessThan":
-                    return value < Model.ObservationValue;
+                    return value < Model.PropertyValue;
                 case "EqualTo":
-                    return value == Model.ObservationValue;
+                    return value == Model.PropertyValue;
                 case "GreaterThan":
-                    return value > Model.ObservationValue;
+                    return value > Model.PropertyValue;
                 default:
                     return false;
             }

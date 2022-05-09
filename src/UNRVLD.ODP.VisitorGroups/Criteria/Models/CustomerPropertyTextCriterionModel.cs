@@ -1,40 +1,35 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EPiServer.Personalization.VisitorGroups;
-#if NET5_0_OR_GREATER
-
-#elif NET461_OR_GREATER
-//using EPiServer.Personalization.VisitorGroups;
-//using EPiServer.Web.Mvc.VisitorGroups;
-#endif
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
-    public class ObservationCriterionModel : CriterionModelBase
+    public class CustomerPropertyTextCriterionModel : CriterionModelBase
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
 #if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 10,
-            SelectionFactoryType = typeof(ObservationTypeSelectionFactory) 
+            SelectionFactoryType = typeof(CustomerPropertyTextSelectionFactory)
         )]
 #elif NET461_OR_GREATER
         [DojoWidget(
               WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(ObservationTypeSelectionFactory))]
+              SelectionFactoryType = typeof(CustomerPropertyTextSelectionFactory))]
 #endif
         [Required]
-        public string Observation { get; set; }
+        [Display(Name = "Customer Property (number)")]
+        public string PropertyName { get; set; }
 
 #if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 20,
-            SelectionFactoryType = typeof(NumberComparisonSelectionFactory)
+            SelectionFactoryType = typeof(TextComparisonSelectionFactory)
         )]
 #elif NET461_OR_GREATER
         [DojoWidget(
               WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(NumberComparisonSelectionFactory))]
+              SelectionFactoryType = typeof(TextComparisonSelectionFactory))]
 #endif
         [Required]
         public string Comparison { get; set; }
@@ -44,6 +39,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         [CriterionPropertyEditor(Order = 30)]
 #endif
         [Display(Name = "Value")]
-        public int ObservationValue { get; set; }
+        public string PropertyValue { get; set; }
     }
 }
