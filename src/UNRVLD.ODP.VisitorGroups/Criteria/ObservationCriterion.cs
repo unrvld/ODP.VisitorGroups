@@ -17,25 +17,26 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         Description = "Query specific observations about the current user (calculated every 24 hours)",
         DisplayName = "Observation"
     )]
-    public class ObservationCriterion : CriterionBase<ObservationCriterionModel>
+    public class ObservationCriterion : OdpCriterionBase<ObservationCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        private readonly IODPUserProfile _odpUserProfile;
+        
 
 #if NET5_0_OR_GREATER
         public ObservationCriterion(OdpVisitorGroupOptions optionValues, 
                             ICustomerDataRetriever customerDataRetriever,
-                            IODPUserProfile odpUserProfile) 
+                            IODPUserProfile odpUserProfile)
+            : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
-            _odpUserProfile = odpUserProfile;
         }
 
         public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
         {
-            return this.IsMatchInner(principal, httpContext);
+            var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
+            return this.IsMatchInner(principal, vuidValue);
         }
 
 #elif NET461_OR_GREATER
@@ -43,16 +44,17 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
-            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
+            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 
         public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
         {
-            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
+            var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
+            return this.IsMatchInner(principal, vuidValue);
         }
 #endif
 
-        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+        protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
             {
@@ -60,8 +62,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 {
                     return false;
                 }
-
-                var vuidValue = _odpUserProfile.DeviceId;
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
