@@ -16,7 +16,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 #elif NET461_OR_GREATER
         [DojoWidget(
               WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(WinbackZoneSelectionFactory))]
+              SelectionFactoryType = typeof(OrderLikelihoodSelectionFactory))]
 #endif
         [Required]
         public string OrderLikelihood { get; set; }

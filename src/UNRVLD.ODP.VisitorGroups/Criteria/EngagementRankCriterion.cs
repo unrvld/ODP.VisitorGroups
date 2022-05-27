@@ -16,44 +16,30 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         Description = "Customer engagement rank from 0 to 100 (calculated every 24 hours)",
         DisplayName = "Engagement rank"
     )]
-    public class EngagementRankCriterion : CriterionBase<EngagementRankCriterionModel>
+    public class EngagementRankCriterion : OdpCriterionBase<EngagementRankCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        private readonly IODPUserProfile _odpUserProfile;
 
 #if NET5_0_OR_GREATER
         public EngagementRankCriterion(OdpVisitorGroupOptions optionValues, 
                 ICustomerDataRetriever customerDataRetriever,
-                IODPUserProfile odpUserProfile) 
+                IODPUserProfile odpUserProfile)
+            : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
-            _odpUserProfile = odpUserProfile;
         }
-
-        
-        public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext);
-        }
-
 #elif NET461_OR_GREATER
         public EngagementRankCriterion()
         {
             _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
-            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
+            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
-
-        public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
-        }
-
 #endif
 
-        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+        protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
             {
@@ -61,7 +47,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 {
                     return false;
                 }
-                var vuidValue = _odpUserProfile.DeviceId;
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {

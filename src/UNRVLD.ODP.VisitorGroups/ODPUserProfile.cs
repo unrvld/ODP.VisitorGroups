@@ -11,43 +11,42 @@ namespace UNRVLD.ODP.VisitorGroups
     public class ODPUserProfile : IODPUserProfile
     {
         private readonly OdpVisitorGroupOptions _optionValues;
-        private Lazy<string> _deviceId;
-
-#if NET5_0_OR_GREATER
-        private readonly HttpContext _httpContextBase;
-#elif NET461_OR_GREATER
-
-        private readonly HttpContextBase _httpContextBase;
-#endif
-
-      
-#if NET5_0_OR_GREATER
-        public ODPUserProfile(OdpVisitorGroupOptions optionValues, HttpContext httpContextBase)
-#elif NET461_OR_GREATER
-
-        public ODPUserProfile(OdpVisitorGroupOptions optionValues, HttpContextBase httpContextBase)
-#endif
+        public ODPUserProfile(OdpVisitorGroupOptions optionValues)
         {
             _optionValues = optionValues;
-            _httpContextBase = httpContextBase;
-
-            _deviceId = new Lazy<string>(() => {
-
-#if NET5_0_OR_GREATER
-                var vuidValue = _httpContextBase.Request.Cookies[_optionValues.OdpCookieName];
-#elif NET461_OR_GREATER
-                var vuidValue = _httpContextBase.Request.Cookies[_optionValues.OdpCookieName]?.Value;
-#endif
-
-                if (!string.IsNullOrWhiteSpace(vuidValue))
-                {
-                    vuidValue = vuidValue.Substring(0, 36).Replace("-", "");
-                }
-
-                return vuidValue;
-            });
         }
 
-        public string DeviceId { get { return _deviceId.Value; } }
+#if NET5_0_OR_GREATER
+        public string GetDeviceId(HttpContext httpContext)
+        {
+            if (httpContext != null)
+            {
+                var vuidValue = httpContext.Request.Cookies[_optionValues.OdpCookieName];
+                return GetVuidValueInternal(vuidValue);
+            }
+
+            return null;
+        }
+#elif NET461_OR_GREATER
+        public string GetDeviceId(HttpContextBase httpContext)
+        {
+            if (httpContext != null)
+            {
+                var vuidValue = httpContext.Request.Cookies[_optionValues.OdpCookieName]?.Value;
+                return GetVuidValueInternal(vuidValue);
+            }
+
+            return null;
+        }
+#endif
+        private string GetVuidValueInternal(string vuidValue)
+        {
+            if (!string.IsNullOrWhiteSpace(vuidValue) && vuidValue.Length > 35)
+            {
+                return vuidValue.Substring(0, 36).Replace("-", string.Empty);
+            }
+
+            return null;
+        }
     }
 }

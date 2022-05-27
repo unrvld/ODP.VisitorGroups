@@ -1,5 +1,4 @@
-﻿
-using EPiServer.Personalization.VisitorGroups;
+﻿using EPiServer.Personalization.VisitorGroups;
 
 using System.Security.Principal;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
@@ -18,44 +17,30 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         Description = "Query customer number fields",
         DisplayName = "Customer property (number)"
     )]
-    public class CustomerPropertyNumberCriterion : CriterionBase<CustomerPropertyNumberCriterionModel>
+    public class CustomerPropertyNumberCriterion : OdpCriterionBase<CustomerPropertyNumberCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        private readonly IODPUserProfile _odpUserProfile;
-
 
 #if NET5_0_OR_GREATER
         public CustomerPropertyNumberCriterion(OdpVisitorGroupOptions optionValues, 
                                                ICustomerDataRetriever customerDataRetriever,
                                                IODPUserProfile odpUserProfile)
+            : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
-            _odpUserProfile = odpUserProfile;
         }
-
-        public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext);
-        }
-
 #elif NET461_OR_GREATER
         public CustomerPropertyNumberCriterion()
         {
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
             _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
-            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
-        }
-
-        public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
+            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 #endif
 
-
-        public bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+        protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
             {
@@ -63,8 +48,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 {
                     return false;
                 }
-
-                var vuidValue = _odpUserProfile.DeviceId;
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {

@@ -1,5 +1,4 @@
-﻿
-#if NET5_0_OR_GREATER
+﻿#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
 #elif NET461_OR_GREATER
 using System.Web;
@@ -9,10 +8,8 @@ using EPiServer.ServiceLocation;
 using System;
 using System.Globalization;
 using EPiServer.Personalization.VisitorGroups;
-
 using System.Security.Principal;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
-using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
@@ -21,41 +18,30 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         Description = "Query customer text fields",
         DisplayName = "Customer property (text)"
     )]
-    public class CustomerPropertyTextCriterion : CriterionBase<CustomerPropertyTextCriterionModel>
+    public class CustomerPropertyTextCriterion : OdpCriterionBase<CustomerPropertyTextCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        private readonly IODPUserProfile _odpUserProfile;
 
 #if NET5_0_OR_GREATER
-        public CustomerPropertyTextCriterion(OdpVisitorGroupOptions optionValues, 
+        public CustomerPropertyTextCriterion(OdpVisitorGroupOptions optionValues,
             ICustomerDataRetriever customerDataRetriever,
             IODPUserProfile odpUserProfile)
+            : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
-            _odpUserProfile = odpUserProfile;
-        }
-
-        public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext);
         }
 #elif NET461_OR_GREATER
         public CustomerPropertyTextCriterion()
         {
             _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
             _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
-            _odpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
-        }
-
-        public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
-        {
-            return this.IsMatchInner(principal, httpContext.ApplicationInstance.Context);
+            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
         }
 #endif
 
-        private bool IsMatchInner(IPrincipal principal, HttpContext httpContext)
+        protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
             {
@@ -63,8 +49,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 {
                     return false;
                 }
-
-                var vuidValue = _odpUserProfile.DeviceId;
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
@@ -88,26 +72,32 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                         case "Is":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.Equals(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                                isMatch = propertyValue.Equals(Model.PropertyValue,
+                                    StringComparison.CurrentCultureIgnoreCase);
                             }
+
                             break;
                         case "StartsWith":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.StartsWith(Model.PropertyValue, true, CultureInfo.CurrentCulture);
+                                isMatch = propertyValue.StartsWith(Model.PropertyValue, true,
+                                    CultureInfo.CurrentCulture);
                             }
+
                             break;
                         case "Contains":
                             if (propertyValue != null)
                             {
                                 isMatch = propertyValue.ToLower().Contains(Model.PropertyValue.ToLower());
                             }
+
                             break;
                         case "EndsWith":
                             if (propertyValue != null)
                             {
                                 isMatch = propertyValue.EndsWith(Model.PropertyValue, true, CultureInfo.CurrentCulture);
                             }
+
                             break;
                     }
 
@@ -118,6 +108,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             {
                 return false;
             }
+
             return false;
         }
     }
