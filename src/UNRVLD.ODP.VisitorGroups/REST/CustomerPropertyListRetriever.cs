@@ -54,12 +54,19 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
         private IEnumerable<Field> GetCustomerPropertiesRequest()
         {
-            var request = new RestRequest("/v3/schema/objects/customers");
-            request.AddHeader("x-api-key", _options.PrivateApiKey);
+            try
+            {
+                var request = new RestRequest("/v3/schema/objects/customers");
+                request.AddHeader("x-api-key", _options.PrivateApiKey);
 
-            var response =  _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
-                
-            return response?.fields ?? Enumerable.Empty<Field>();
+                var response = _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
+
+                return response?.fields ?? Enumerable.Empty<Field>();
+            }
+            catch
+            {
+                return Enumerable.Empty<Field>();
+            }
         }
 
         protected virtual void Dispose(bool disposing)

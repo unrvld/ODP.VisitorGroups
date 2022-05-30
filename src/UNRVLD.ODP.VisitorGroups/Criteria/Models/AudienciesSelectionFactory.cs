@@ -37,9 +37,16 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                           }
                         }";
 
-            var result = client.Query<AudiencesResponse>(query).Result;
-
-            return result.Items.Select(a => new SelectListItem { Text = a.Description, Value = a.Name}).OrderBy(x => x.Text);
+            try
+            {
+                var result = client.Query<AudiencesResponse>(query).Result;
+                return result.Items.Select(a => new SelectListItem {Text = a.Description, Value = a.Name})
+                    .OrderBy(x => x.Text);
+            }
+            catch
+            {
+                return new List<SelectListItem>();
+            }
         }
     }
 }
