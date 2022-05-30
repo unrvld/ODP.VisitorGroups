@@ -5,7 +5,7 @@
 
 	  <PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 	  <RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
-	  <Version>1.0.0</Version>
+	  <Version>1.1.2</Version>
 	  <Authors>Andrew Markham; David Knipe</Authors>
 	  <Owners>Made to Engage;UNRVLD</Owners>
 	  <Title>UNRVLD - Optimizely Visitor Groups</Title>
@@ -14,7 +14,7 @@
 	  </Description>
 	  <Tags>UNRVLD;Made to Engage;Episerver;Optimizely;ODP;Visitor Groups</Tags>
 	  <ReleaseNotes>
-		  1.0.0 - Initial release
+		  1.1.2 - Bug fix, if invalid or missing key do not throw exception in Visitor Groups UI
 	  </ReleaseNotes>
 
 	  <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
