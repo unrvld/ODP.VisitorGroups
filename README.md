@@ -78,3 +78,5 @@ You can also manage these with the [options admin module](https://world.optimize
  |:---|:---------------|
  |1.0|Initial Release|
  |1.1|Add new criterion (Customer Properties)<br/>Support for .net6|
+ |1.1.1|Refactor code to deal with HttpContect access issue|
+ |1.1.2|Ensure Visitor Group UI doesn’t break if invalid or missing API key|
