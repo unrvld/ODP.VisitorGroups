@@ -13,6 +13,7 @@ namespace UNRVLD.ODP
     ///        "OdpVisitorGroupOptions": {
     ///            "OdpCookieName": "vuid",
     ///            "CacheTimeoutSeconds": 10,
+    ///            "IncludeAudienceCounts": true,
     ///            "BaseEndPoint": "https:///api.zaius.com",
     ///            "PrivateApiKey": "key-lives-here"
     ///        }
@@ -26,6 +27,7 @@ namespace UNRVLD.ODP
         {
             OdpCookieName = "vuid";
             CacheTimeoutSeconds = 1;
+            IncludeAudienceCounts = true;
             BaseEndPoint = "https://api.zaius.com";
             SchemaCacheTimeoutSeconds = 86400;
         }
@@ -49,6 +51,10 @@ namespace UNRVLD.ODP
         /// The length of time to cache schema responses for, can be relatively long lived and defaults to 24 hours
         /// </summary>
         public int SchemaCacheTimeoutSeconds { get; set; }
+        /// <summary>
+        /// Whether the real-time segment dropdown list should include audience count estimates; default true
+        /// </summary>
+        public bool IncludeAudienceCounts { get; set; }
 
         public bool IsConfigured => !(string.IsNullOrEmpty(OdpCookieName) ||
                                     string.IsNullOrEmpty(BaseEndPoint) || 

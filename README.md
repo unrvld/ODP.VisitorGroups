@@ -48,6 +48,7 @@ All settings are optional, apart from the PrivateApiKey
       "OdpVisitorGroupOptions": {
          "OdpCookieName": "vuid",
          "CacheTimeoutSeconds": 10,
+         "IncludeAudienceCounts": true,
          "BaseEndPoint": "https://api.zaius.com",
          "PrivateApiKey": "key-lives-here"
        }
@@ -64,6 +65,7 @@ All settings are optional, apart from the PrivateApiKey
   <appSettings>
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.OdpCookieName, UNRVLD.ODP.VisitorGroups" value="vuid" />
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.CacheTimeoutSeconds, UNRVLD.ODP.VisitorGroups" value="1" />
+    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.IncludeAudienceCounts, UNRVLD.ODP.VisitorGroups" value="true" />
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.BaseEndPoint, UNRVLD.ODP.VisitorGroups" value="https://api.zaius.com" />
     <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.PrivateApiKey, UNRVLD.ODP.VisitorGroups" value="key-lives-here" />
   </appSettings>

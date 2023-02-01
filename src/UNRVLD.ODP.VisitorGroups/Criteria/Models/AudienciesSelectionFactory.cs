@@ -21,10 +21,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
     public class AudienciesSelectionFactory : ISelectionFactory
     {
         private readonly IGraphQLClient client;
+        private readonly OdpVisitorGroupOptions _options;
 
         public AudienciesSelectionFactory()
         {
             this.client = ServiceLocator.Current.GetInstance<IGraphQLClient>();
+            _options = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
         }
 
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
@@ -45,19 +47,26 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
             try
             {
                 var result = client.Query<AudiencesResponse>(query).Result;
-                var orderedResult = result.Items.OrderBy(x => x.Description);
+                
+                if(_options.IncludeAudienceCounts) {
+                    var orderedResult = result.Items.OrderBy(x => x.Description);
 
-                var allCountsQuery = GetAllCountsQuery(orderedResult.ToList());
-                var allCountsResult = client.Query<dynamic>(allCountsQuery).Result;
+                    var allCountsQuery = GetAllCountsQuery(orderedResult.ToList());
+                    var allCountsResult = client.Query<dynamic>(allCountsQuery).Result;
 
 
-                foreach (var audience in orderedResult)
-                {
-                    var countObject = JsonConvert.DeserializeObject<AudienceCount>(allCountsResult[audience.Name].ToString());
-                    selectItems.Add(new SelectListItem() {Text = audience.Description + GetCountEstimateString(countObject), Value = audience.Name});
+                    foreach (var audience in orderedResult)
+                    {
+                        var countObject = JsonConvert.DeserializeObject<AudienceCount>(allCountsResult[audience.Name].ToString());
+                        selectItems.Add(new SelectListItem() {Text = audience.Description + GetCountEstimateString(countObject), Value = audience.Name});
+                    }
+
+                    return selectItems;
                 }
-
-                return selectItems;
+                else {
+                    return result.Items.Select(a => new SelectListItem {Text = a.Description, Value = a.Name})
+                        .OrderBy(x => x.Text);
+                }
             }
             catch
             {
