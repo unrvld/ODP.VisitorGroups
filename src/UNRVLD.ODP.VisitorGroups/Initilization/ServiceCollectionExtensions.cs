@@ -17,6 +17,7 @@ namespace UNRVLD.ODP.VisitorGroups.Initilization
             services.AddScoped<ICustomerDataRetriever, CustomerDataRetriever>();
             services.AddScoped<ICustomerPropertyListRetriever, CustomerPropertyListRetriever>();
             services.AddHttpContextOrThreadScoped<IODPUserProfile, ODPUserProfile>();
+            services.AddTransient<IAudienceSizeCachePopulator, AudienceSizeCachePopulator>();
         }
     }
 }

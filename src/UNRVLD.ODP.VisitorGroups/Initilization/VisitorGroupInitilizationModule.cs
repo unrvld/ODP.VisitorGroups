@@ -6,8 +6,8 @@ using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.Criteria;
 using UNRVLD.ODP.VisitorGroups.REST;
-using System.Net.Http;
 using Microsoft.Extensions.DependencyInjection;
+using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
 namespace UNRVLD.ODP.VisitorGroups.Initilization
 {
@@ -30,6 +30,7 @@ namespace UNRVLD.ODP.VisitorGroups.Initilization
             services.AddScoped<ICustomerDataRetriever, CustomerDataRetriever>();
             services.AddScoped<ICustomerPropertyListRetriever, CustomerPropertyListRetriever>();
             services.AddHttpContextOrThreadScoped<IODPUserProfile, ODPUserProfile>();
+            services.AddTransient<IAudienceSizeCachePopulator, AudienceSizeCachePopulator>();
         }
 
         public void Initialize(InitializationEngine context)
