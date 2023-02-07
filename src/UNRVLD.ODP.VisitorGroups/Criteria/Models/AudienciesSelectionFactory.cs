@@ -4,6 +4,7 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
 #elif NET461_OR_GREATER
 using System.Web.Mvc;
+using System.Web.Hosting;
 #endif
 
 using System;
@@ -11,20 +12,30 @@ using System.Collections.Generic;
 using System.Linq;
 using IGraphQLClient = UNRVLD.ODP.VisitorGroups.GraphQL.IGraphQLClient;
 using EPiServer.ServiceLocation;
-using Newtonsoft.Json;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models.AudienceCount;
-using Audience = UNRVLD.ODP.VisitorGroups.GraphQL.Models.Audience;
+using EPiServer.Framework.Cache;
+using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
     public class AudienciesSelectionFactory : ISelectionFactory
     {
         private readonly IGraphQLClient client;
+        private readonly ISynchronizedObjectInstanceCache cache;
+        private string cacheKey = "OdpVisitorGroups_AudienceList_";
+#if NET5_0_OR_GREATER
+        private readonly IServiceScopeFactory serviceScopeFactory;
+#endif
 
         public AudienciesSelectionFactory()
         {
-            this.client = ServiceLocator.Current.GetInstance<IGraphQLClient>();
+            client = ServiceLocator.Current.GetInstance<IGraphQLClient>();
+            cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
+#if NET5_0_OR_GREATER
+            serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
+#endif
         }
 
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
@@ -44,43 +55,60 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 
             try
             {
+                var cachePopulationRequested = false;
                 var result = client.Query<AudiencesResponse>(query).Result;
                 var orderedResult = result.Items.OrderBy(x => x.Description);
 
-                var allCountsQuery = GetAllCountsQuery(orderedResult.ToList());
-                var allCountsResult = client.Query<dynamic>(allCountsQuery).Result;
-
-
+                selectItems = new List<SelectListItem>();
                 foreach (var audience in orderedResult)
                 {
-                    var countObject = JsonConvert.DeserializeObject<AudienceCount>(allCountsResult[audience.Name].ToString());
-                    selectItems.Add(new SelectListItem() {Text = audience.Description + GetCountEstimateString(countObject), Value = audience.Name});
+                    var cacheResult = cache.Get(cacheKey + audience.Name);
+                    if (cacheResult != null)
+                    {
+                        selectItems.Add(new SelectListItem() { Text = audience.Description + GetCountEstimateString((AudienceCount)cacheResult), Value = audience.Name });
+                    }
+                    else
+                    {
+                        selectItems.Add(new SelectListItem() { Text = audience.Description + " (Calculating segment size...)", Value = audience.Name });
+                        if (cachePopulationRequested == false)
+                        {
+                            cachePopulationRequested = true;
+
+#if NET5_0_OR_GREATER
+                            _ = Task.Run(async () =>
+                            {
+                                try
+                                {
+                                    using var scope = serviceScopeFactory.CreateScope();
+                                    var cachePopulator = scope.ServiceProvider.GetRequiredService<IAudienceSizeCachePopulator>();
+                                    await cachePopulator.PopulateEntireCache(false);
+                                }
+                                catch (Exception e)
+                                {
+                                    Console.WriteLine(e);
+                                }
+                            });
+#elif NET461_OR_GREATER
+                            try
+                            {
+                                var cachePopulator = ServiceLocator.Current.GetInstance<IAudienceSizeCachePopulator>();
+                                HostingEnvironment.QueueBackgroundWorkItem(c => cachePopulator.PopulateEntireCache(false));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
+#endif
+                        }
+                    }
                 }
 
                 return selectItems;
             }
-            catch
+            catch 
             {
                 return new List<SelectListItem>();
             }
-        }
-
-        private string GetAllCountsQuery(List<Audience> allAudiences)
-        {
-            var countQuery = $@"query MyQuery {{";
-            foreach (var audience in allAudiences)
-            {
-                countQuery += $@"{audience.Name}: audience(name: ""{audience.Name}"") {{
-                                 population_estimate(percent_error: 10) {{
-                                   estimated_lower_bound
-                                   estimated_upper_bound
-                                 }}
-                               }}
-                               ";
-            }
-            countQuery += $@"}}";
-
-            return countQuery;
         }
 
         private string GetCountEstimateString(AudienceCount audienceCount)
