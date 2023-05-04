@@ -43,6 +43,6 @@ jobs:
     - name: nuget push
       if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release')
       working-directory: ./src/UNRVLD.ODP.VisitorGroups
-      run: dotnet nuget push "**/UNRVLD.ODP.VisitorGroups*.nupkg" -k ${{ env.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/made-to-engage/index.json --skip-duplicate
+      run: dotnet nuget push "**/UNRVLD.ODP.VisitorGroups*.nupkg" -k ${{ env.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/unrvld/index.json --skip-duplicate
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
