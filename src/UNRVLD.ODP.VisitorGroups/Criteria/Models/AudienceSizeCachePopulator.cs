@@ -54,7 +54,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 
             try
             {
-                var result = _client.Query<AudiencesResponse>(query).Result;
+                var result = await _client.Query<AudiencesResponse>(query);
                 var orderedResult = result.Items.OrderBy(x => x.Description);
 
                 var skip = 0;
@@ -102,7 +102,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                     skip += pageSize;
                 }
             }
-            catch (Exception ex) { }
+            catch (Exception) { }
         }
 
         private bool CheckCacheHit(IList<Audience> CurrentPageOfAudiences, int PageSize)

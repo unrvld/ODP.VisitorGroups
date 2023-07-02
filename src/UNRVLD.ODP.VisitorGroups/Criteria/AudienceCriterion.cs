@@ -4,7 +4,7 @@ using UNRVLD.ODP.VisitorGroups.GraphQL;
 
 #if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
-#elif NET461_OR_GREATER
+#elif NET472_OR_GREATER
 using System.Web;
 using EPiServer.ServiceLocation;
 #endif
@@ -29,17 +29,17 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly ISynchronizedObjectInstanceCache _cache;
 
 #if NET5_0_OR_GREATER
-        public AudienceCriterion(IGraphQLClient graphQlClient, 
-                                OdpVisitorGroupOptions optionValues, 
+        public AudienceCriterion(IGraphQLClient graphQlClient,
+                                OdpVisitorGroupOptions optionValues,
                                 ISynchronizedObjectInstanceCache cache,
                                 IODPUserProfile odpUserProfile)
-            :base(odpUserProfile)
+            : base(odpUserProfile)
         {
             _graphQlClient = graphQlClient;
             _optionValues = optionValues;
             _cache = cache;
         }
-#elif NET461_OR_GREATER
+#elif NET472_OR_GREATER
         public AudienceCriterion()
         {
             _graphQlClient = ServiceLocator.Current.GetInstance<IGraphQLClient>();
@@ -96,7 +96,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
                 _cache.Insert(
-                    cacheKey, 
+                    cacheKey,
                     isInAudience,
                     new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _optionValues.CacheTimeoutSeconds), CacheTimeoutType.Absolute));
 
