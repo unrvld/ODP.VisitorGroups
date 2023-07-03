@@ -33,10 +33,10 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
 
 #if NET461_OR_GREATER
             /* This is needed as the alternate code fails to complete, without an error.*/
-            var response461 = await _graphQlClient.SendQueryAsync<T>(request);
-            //Task.WaitAll(response461);
+            var response461 = _graphQlClient.SendQueryAsync<T>(request);
+            Task.WaitAll(response461);
 
-            return response461.Data;// .Result.Data;
+            return response461.Result.Data;
 #elif NET5_0_OR_GREATER
             var response = await _graphQlClient.SendQueryAsync<T>(request);
             return response.Data;
