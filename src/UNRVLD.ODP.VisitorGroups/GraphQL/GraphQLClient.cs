@@ -19,7 +19,7 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
             _graphQlClient = new GraphQLHttpClient(options.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
         }
 
-        public async Task<T> Query<T>(string query)where T : class
+        public async Task<T> Query<T>(string query) where T : class
         {
             if (!_options.IsConfigured)
             {

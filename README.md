@@ -80,3 +80,6 @@ You can also manage these with the [options admin module](https://world.optimize
  |1.1|Add new criterion (Customer Properties)<br/>Support for .net6|
  |1.1.1|Refactor code to deal with HttpContect access issue|
  |1.1.2|Ensure Visitor Group UI doesn’t break if invalid or missing API key|
+ |1.2.0|Adds counts to the segments, indicating the number of matching profiles|
+ |1.3.0|Load the RTS segment count async|
+ |1.4.0|Removed support for .net5<br/>Moved minimum .net framework requirements to v4.7.1<br/>Added support for .net7<br/>Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.|
