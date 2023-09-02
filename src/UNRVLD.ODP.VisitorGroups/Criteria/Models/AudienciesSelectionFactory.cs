@@ -13,10 +13,7 @@ using System.Linq;
 using IGraphQLClient = UNRVLD.ODP.VisitorGroups.GraphQL.IGraphQLClient;
 using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
-using UNRVLD.ODP.VisitorGroups.GraphQL.Models.AudienceCount;
 using EPiServer.Framework.Cache;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
@@ -25,17 +22,11 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         private readonly IGraphQLClient client;
         private readonly ISynchronizedObjectInstanceCache cache;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
-#if NET5_0_OR_GREATER
-        private readonly IServiceScopeFactory serviceScopeFactory;
-#endif
 
         public AudienciesSelectionFactory()
         {
             client = ServiceLocator.Current.GetInstance<IGraphQLClient>();
             cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
-#if NET5_0_OR_GREATER
-            serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
-#endif
         }
 
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
@@ -46,96 +37,55 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                               node {
                                 description
                                 name
+                                population_estimate(percent_error: 10) {
+                                  estimated_lower_bound
+                                  estimated_upper_bound
+                                }
                               }
                             }
                           }
                         }";
 
-            var selectItems = new List<SelectListItem>();
-
             try
             {
-                var cachePopulationRequested = false;
                 var result = client.Query<AudiencesResponse>(query).Result;
-                var orderedResult = result.Items.OrderBy(x => x.Description);
 
-                selectItems = new List<SelectListItem>();
-                foreach (var audience in orderedResult)
-                {
-                    var cacheResult = cache.Get(cacheKey + audience.Name);
-                    if (cacheResult != null)
-                    {
-                        selectItems.Add(new SelectListItem() { Text = audience.Description + GetCountEstimateString((AudienceCount)cacheResult), Value = audience.Name });
-                    }
-                    else
-                    {
-                        selectItems.Add(new SelectListItem() { Text = audience.Description + " (Calculating segment size...)", Value = audience.Name });
-                        if (cachePopulationRequested == false)
-                        {
-                            cachePopulationRequested = true;
-
-#if NET5_0_OR_GREATER
-                            _ = Task.Run(async () =>
-                            {
-                                try
-                                {
-                                    using var scope = serviceScopeFactory.CreateScope();
-                                    var cachePopulator = scope.ServiceProvider.GetRequiredService<IAudienceSizeCachePopulator>();
-                                    await cachePopulator.PopulateEntireCache(false);
-                                }
-                                catch (Exception e)
-                                {
-                                    Console.WriteLine(e);
-                                }
-                            });
-#elif NET461_OR_GREATER
-                            try
-                            {
-                                var cachePopulator = ServiceLocator.Current.GetInstance<IAudienceSizeCachePopulator>();
-                                HostingEnvironment.QueueBackgroundWorkItem(c => cachePopulator.PopulateEntireCache(false));
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-#endif
-                        }
-                    }
-                }
-
-                return selectItems;
+                return result.Items
+                    .OrderBy(x => x.Description)
+                    .Select(audience => new SelectListItem { Text = audience.Description + GetCountEstimateString(audience), Value = audience.Name })
+                    .ToArray();
             }
-            catch 
+            catch
             {
-                return new List<SelectListItem>();
+                return Enumerable.Empty<SelectListItem>();
             }
         }
 
-        private string GetCountEstimateString(AudienceCount audienceCount)
+        private string GetCountEstimateString(Audience audience)
         {
-            if (audienceCount == null ||
-                audienceCount.PopulationEstimate == null)
+            if (audience?.PopulationEstimate == null)
             {
                 return string.Empty;
             }
 
-            if (audienceCount.PopulationEstimate.EstimatedLowerBound == 0)
+            var populationEstimate = audience.PopulationEstimate;
+            if (populationEstimate.EstimatedLowerBound == 0)
             {
                 return " (close to 0 visitors)";
             }
 
-            if (audienceCount.PopulationEstimate.EstimatedLowerBound == 1)
+            if (populationEstimate.EstimatedLowerBound == 1)
             {
                 return " (more than 1 visitor)";
             }
 
-            if (audienceCount.PopulationEstimate.EstimatedLowerBound < 100)
+            if (populationEstimate.EstimatedLowerBound < 100)
             {
-                return $" (more than {audienceCount.PopulationEstimate.EstimatedLowerBound} visitors)";
+                return $" (more than {populationEstimate.EstimatedLowerBound} visitors)";
             }
 
-            int calc = (audienceCount.PopulationEstimate.EstimatedLowerBound +
-                        audienceCount.PopulationEstimate.EstimatedUpperBound) / 2;
+            int calc = (populationEstimate.EstimatedLowerBound +
+                        populationEstimate.EstimatedUpperBound) / 2;
             return $" (about {calc} visitors)";
 
         }
