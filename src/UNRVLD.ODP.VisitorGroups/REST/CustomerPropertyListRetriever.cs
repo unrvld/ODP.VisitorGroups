@@ -40,7 +40,7 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
             if (apiResult == null || !apiResult.Any())
             {
-                return null;
+                return Enumerable.Empty<Field>();
             }
 
             _cache.Insert(
@@ -52,7 +52,7 @@ namespace UNRVLD.ODP.VisitorGroups.REST
             return apiResult;
         }
 
-        private IEnumerable<Field> GetCustomerPropertiesRequest()
+        private ICollection<Field> GetCustomerPropertiesRequest()
         {
             try
             {
@@ -61,11 +61,11 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
                 var response = _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
 
-                return response?.fields ?? Enumerable.Empty<Field>();
+                return response?.fields ?? Array.Empty<Field>();
             }
             catch
             {
-                return Enumerable.Empty<Field>();
+                return Array.Empty<Field>();
             }
         }
 

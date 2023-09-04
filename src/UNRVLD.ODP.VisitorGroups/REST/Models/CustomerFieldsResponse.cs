@@ -5,6 +5,6 @@ namespace UNRVLD.ODP.VisitorGroups.REST.Models
 {
     public class CustomerFieldsResponse
     {
-        public List<Field> fields { get; set; }
+        public ICollection<Field> fields { get; set; }
     }
 }
