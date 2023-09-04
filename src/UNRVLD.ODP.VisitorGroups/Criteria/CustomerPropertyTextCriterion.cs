@@ -9,6 +9,7 @@ using System;
 using System.Globalization;
 using EPiServer.Personalization.VisitorGroups;
 using System.Security.Principal;
+using Newtonsoft.Json.Linq;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
@@ -52,56 +53,58 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfoDynamic(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
                     if (customer == null)
                     {
                         return false;
                     }
 
-                    var isMatch = false;
-                    var propertyValue = (customer[Model.PropertyName] as Newtonsoft.Json.Linq.JValue)?.Value as string;
+                    if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
+                    {
+                        return false;
+                    }
+                    
+                    var propertyValue = propertyToken?.Value<string>();
 
                     switch (Model.Comparison)
                     {
                         case "HasNoValue":
-                            isMatch = string.IsNullOrEmpty(propertyValue);
-                            break;
+                            return string.IsNullOrEmpty(propertyValue);
                         case "HasValue":
-                            isMatch = !string.IsNullOrEmpty(propertyValue);
-                            break;
+                            return !string.IsNullOrEmpty(propertyValue);
                         case "Is":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.Equals(Model.PropertyValue,
-                                    StringComparison.CurrentCultureIgnoreCase);
+                                return propertyValue.Equals(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
                             }
 
                             break;
                         case "StartsWith":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.StartsWith(Model.PropertyValue, true,
-                                    CultureInfo.CurrentCulture);
+                                return propertyValue.StartsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
                             }
 
                             break;
                         case "Contains":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.ToLower().Contains(Model.PropertyValue.ToLower());
+#if NET5_0_OR_GREATER
+                                return propertyValue.Contains(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+#else
+                                return propertyValue.IndexOf(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase) >= 0;
+#endif
                             }
 
                             break;
                         case "EndsWith":
                             if (propertyValue != null)
                             {
-                                isMatch = propertyValue.EndsWith(Model.PropertyValue, true, CultureInfo.CurrentCulture);
+                                return propertyValue.EndsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
                             }
 
                             break;
                     }
-
-                    return isMatch;
                 }
             }
             catch

@@ -1,6 +1,7 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
 using System.Security.Principal;
+using Newtonsoft.Json.Linq;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
 #if NET5_0_OR_GREATER
@@ -51,31 +52,26 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfoDynamic(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
                     if (customer == null)
                     {
                         return false;
                     }
-
-                    var isMatch = false;
-
-                    var rawValue = (customer[Model.PropertyName] as Newtonsoft.Json.Linq.JValue)?.Value;
-                    if (rawValue != null)
+                    
+                    if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
                     {
-                        decimal propertyValue;
-                        if (decimal.TryParse(rawValue.ToString(), out propertyValue))
-                        {
-                            isMatch = CompareMe(propertyValue, Model.Comparison);
-                        }
+                        return false;
                     }
 
-                    return isMatch;
+                    return decimal.TryParse(propertyToken?.Value<string>(), out var propertyValue) &&
+                           CompareMe(propertyValue, Model.Comparison);
                 }
             }
             catch
             {
                 return false;
             }
+
             return false;
         }
 

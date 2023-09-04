@@ -17,16 +17,15 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
         private readonly ICustomerPropertyListRetriever _customerPropertyListRetriever;
 
-        public CustomerDataRetriever(IGraphQLClient graphQlClient, 
-            OdpVisitorGroupOptions optionValues, 
-            ISynchronizedObjectInstanceCache cache, 
+        public CustomerDataRetriever(IGraphQLClient graphQlClient,
+            OdpVisitorGroupOptions optionValues,
+            ISynchronizedObjectInstanceCache cache,
             ICustomerPropertyListRetriever customerPropertyListRetriever)
         {
             _graphQlClient = graphQlClient;
             _optionValues = optionValues;
             _cache = cache;
             _customerPropertyListRetriever = customerPropertyListRetriever;
-
         }
 
         public Customer GetCustomerInfo(string vuidValue)
@@ -46,8 +45,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     return (Customer)cachedResult;
                 }
 
+                var allFields = _customerPropertyListRetriever.GetCustomerProperties();
+                var allFieldsString = String.Join(Environment.NewLine, allFields.Select(x => x.name));
+
                 var query = $@"query MyQuery {{
                                   customer(vuid: ""{vuidValue}"") {{
+                                    {allFieldsString}
                                     observations {{
                                       total_revenue
                                       order_count
@@ -81,68 +84,5 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 return null;
             }
         }
-
-        public dynamic GetCustomerInfoDynamic(string vuidValue)
-        {
-            try
-            {
-                if (!_optionValues.IsConfigured)
-                {
-                    return null;
-                }
-
-                var cacheKey = $"odp_rts_customer_dynamic_{vuidValue}";
-                var cachedResult = _cache.Get(cacheKey);
-                if (cachedResult != null)
-                {
-                    return (Customer)cachedResult;
-                }
-
-                var allFields = _customerPropertyListRetriever.GetCustomerProperties().ToList();
-                var allFieldsString = String.Join(System.Environment.NewLine, allFields.Select(x => x.name));
-
-                var query = $@"query MyQuery {{
-                                  customer(vuid: ""{vuidValue}"") {{
-                                    {allFieldsString}
-                                    observations {{
-                                      total_revenue
-                                      order_count
-                                      average_order_revenue
-                                    }}
-                                    insights {{
-                                      engagement_rank
-                                      winback_zone
-                                      order_likelihood
-                                    }}
-                                  }}
-                                }}";
-
-                var result = _graphQlClient.Query<DynamicCustomerResponse>(query).Result;
-
-                if (result.Customer != null)
-                {
-                    // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
-                    _cache.Insert(
-                        cacheKey,
-                        result,
-                        new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _optionValues.CacheTimeoutSeconds),
-                            CacheTimeoutType.Absolute));
-                }
-
-                return result.Customer;
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
     }
-
-    public class DynamicCustomerResponse
-    {
-        [JsonProperty("customer")]
-        public dynamic Customer { get; set; }
-    }
-
 }

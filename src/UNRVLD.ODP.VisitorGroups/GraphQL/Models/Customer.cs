@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models
 {
@@ -12,6 +14,9 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models
 
         [JsonProperty("audiences")]
         public GraphQL.Edges<Audience> Response { get; set; }
+
+        [JsonExtensionData]
+        public IDictionary<string, JToken> AdditionalFields { get; set; } = new Dictionary<string, JToken>();
     }
 
     public class Insights
@@ -27,11 +32,11 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models
     public class Observations
     {
         [JsonProperty("total_revenue")]
-        public decimal TotalRevenue { get; set; }
+        public decimal? TotalRevenue { get; set; }
         [JsonProperty("order_count")]
-        public int OrderCount { get; set; }
+        public int? OrderCount { get; set; }
         [JsonProperty("AverageOrderRevenue")]
-        public decimal AverageOrderRevenue { get; set; }
+        public decimal? AverageOrderRevenue { get; set; }
     }
 
 }
