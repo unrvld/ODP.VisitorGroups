@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0</TargetFrameworks>
 		<PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 		<RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
 		<Version>1.4.0</Version>
@@ -30,18 +30,7 @@
 	  </RestoreSources>
 		<PackageProjectUrl>https://github.com/made-to-engage/ODP.VisitorGroups</PackageProjectUrl>
 	</PropertyGroup>
-	<!-- Conditionally obtain references for the .NET Framework 4.0 target -->
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-		<Reference Include="System.Web" />
-		<PackageReference Include="EPiServer.Framework" Version="[11.18.1,12)" />
-		<PackageReference Include="EPiServer.Framework.AspNet" Version="[11.18.1,12)" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="[6.0.0,7)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.0,7)" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-		<PackageReference Include="GraphQL.Client" Version="4.0.2" />
-		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' ">
+	<ItemGroup>
 		<PackageReference Include="EPiServer.Framework" Version="[12.0.3,13)" />
 		<PackageReference Include="EPiServer.Framework.AspNetCore" Version="[12.0.3,13)" />
 		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="[12.0.3,13)" />

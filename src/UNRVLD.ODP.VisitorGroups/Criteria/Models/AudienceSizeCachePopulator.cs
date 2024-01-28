@@ -82,19 +82,11 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                         var audience = orderedResult.Skip(skip + loopCount).Take(1).First();
                         var countObject = JsonConvert.DeserializeObject<AudienceCount>((countResult[audience.Name].ToString()));
 
-#if NET5_0_OR_GREATER
                         _cache.Insert(
                             cacheKey + audience.Name,
                             countObject,
                             new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
-#elif NET461_OR_GREATER
-                        // Strange behaviour in .net Framework, where it thinks the Insert method 
-                        // doesn't exist so accessing the ObjectInstanceCache directly to resolve
-                        _cache.ObjectInstanceCache.Insert(
-                            cacheKey + audience.Name,
-                            countObject,
-                            new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
-#endif
+
 
                         loopCount++;
                     }

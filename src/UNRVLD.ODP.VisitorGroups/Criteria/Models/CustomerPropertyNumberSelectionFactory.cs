@@ -6,11 +6,7 @@ using EPiServer.ServiceLocation;
 using UNRVLD.ODP.VisitorGroups.REST;
 using UNRVLD.ODP.VisitorGroups.REST.Models;
 
-#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc.Rendering;
-#elif NET461_OR_GREATER
-using System.Web.Mvc;
-#endif
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {

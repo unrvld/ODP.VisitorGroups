@@ -2,12 +2,8 @@
 using EPiServer.Personalization.VisitorGroups;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 
-#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
-#elif NET472_OR_GREATER
-using System.Web;
-using EPiServer.ServiceLocation;
-#endif
+
 
 using System.Security.Principal;
 using EPiServer.Framework.Cache;
@@ -27,8 +23,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly IGraphQLClient _graphQlClient;
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ISynchronizedObjectInstanceCache _cache;
-
-#if NET5_0_OR_GREATER
         public AudienceCriterion(IGraphQLClient graphQlClient,
                                 OdpVisitorGroupOptions optionValues,
                                 ISynchronizedObjectInstanceCache cache,
@@ -39,15 +33,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             _optionValues = optionValues;
             _cache = cache;
         }
-#elif NET472_OR_GREATER
-        public AudienceCriterion()
-        {
-            _graphQlClient = ServiceLocator.Current.GetInstance<IGraphQLClient>();
-            _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
-            _cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
-            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
-        }
-#endif
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try

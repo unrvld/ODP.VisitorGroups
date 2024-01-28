@@ -1,5 +1,4 @@
-﻿#if NET5_0_OR_GREATER
-using EPiServer.ServiceLocation;
+﻿using EPiServer.ServiceLocation;
 using Microsoft.Extensions.DependencyInjection;
 using UNRVLD.ODP.VisitorGroups.Criteria;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
@@ -21,4 +20,4 @@ namespace UNRVLD.ODP.VisitorGroups.Initilization
         }
     }
 }
-#endif
+

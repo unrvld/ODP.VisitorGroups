@@ -1,12 +1,8 @@
 ﻿using System.Security.Principal;
 using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Http;
-#elif NET461_OR_GREATER
-using System.Web;
-using EPiServer.ServiceLocation;
-#endif
+
 
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
@@ -20,8 +16,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         protected IODPUserProfile OdpUserProfile;
 
-#if NET5_0_OR_GREATER
-
         protected OdpCriterionBase(IODPUserProfile odpUserProfile)
         {
             OdpUserProfile = odpUserProfile;
@@ -31,13 +25,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
             return this.IsMatchInner(principal, vuidValue);
         }
-#elif NET461_OR_GREATER
-        public override bool IsMatch(IPrincipal principal, HttpContextBase httpContext)
-        {
-            var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
-            return this.IsMatchInner(principal, vuidValue);
-        }
-#endif
+
 
         protected abstract bool IsMatchInner(IPrincipal principal, string vuidValue);
     }

@@ -1,11 +1,7 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0_OR_GREATER
 using Microsoft.AspNetCore.Mvc.Rendering;
-#elif NET461_OR_GREATER
-using System.Web.Mvc;
-using System.Web.Hosting;
-#endif
+
 
 using System;
 using System.Collections.Generic;
@@ -25,17 +21,15 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         private readonly IGraphQLClient client;
         private readonly ISynchronizedObjectInstanceCache cache;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
-#if NET5_0_OR_GREATER
+
         private readonly IServiceScopeFactory serviceScopeFactory;
-#endif
 
         public AudienciesSelectionFactory()
         {
             client = ServiceLocator.Current.GetInstance<IGraphQLClient>();
             cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
-#if NET5_0_OR_GREATER
             serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
-#endif
+
         }
 
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
@@ -74,7 +68,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                         {
                             cachePopulationRequested = true;
 
-#if NET5_0_OR_GREATER
                             _ = Task.Run(async () =>
                             {
                                 try
@@ -88,17 +81,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                                     Console.WriteLine(e);
                                 }
                             });
-#elif NET461_OR_GREATER
-                            try
-                            {
-                                var cachePopulator = ServiceLocator.Current.GetInstance<IAudienceSizeCachePopulator>();
-                                HostingEnvironment.QueueBackgroundWorkItem(c => cachePopulator.PopulateEntireCache(false));
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-#endif
                         }
                     }
                 }

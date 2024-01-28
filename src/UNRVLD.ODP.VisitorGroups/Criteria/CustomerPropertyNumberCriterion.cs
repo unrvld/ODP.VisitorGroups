@@ -4,12 +4,8 @@ using System.Security.Principal;
 using Newtonsoft.Json.Linq;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
-#if NET5_0_OR_GREATER
+
 using Microsoft.AspNetCore.Http;
-#elif NET461_OR_GREATER
-using System.Web;
-using EPiServer.ServiceLocation;
-#endif
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
@@ -23,7 +19,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
 
-#if NET5_0_OR_GREATER
         public CustomerPropertyNumberCriterion(OdpVisitorGroupOptions optionValues, 
                                                ICustomerDataRetriever customerDataRetriever,
                                                IODPUserProfile odpUserProfile)
@@ -32,14 +27,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
         }
-#elif NET461_OR_GREATER
-        public CustomerPropertyNumberCriterion()
-        {
-            _optionValues = ServiceLocator.Current.GetInstance<OdpVisitorGroupOptions>();
-            _customerDataRetriever = ServiceLocator.Current.GetInstance<ICustomerDataRetriever>();
-            OdpUserProfile = ServiceLocator.Current.GetInstance<IODPUserProfile>();
-        }
-#endif
 
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {

@@ -8,16 +8,11 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
-#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 10,
             SelectionFactoryType = typeof(WinbackZoneSelectionFactory)
         )]
-#elif NET461_OR_GREATER
-        [DojoWidget(
-              WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(WinbackZoneSelectionFactory))]
-#endif
+
 
         [Required]
         public string WinbackZone { get; set; }
