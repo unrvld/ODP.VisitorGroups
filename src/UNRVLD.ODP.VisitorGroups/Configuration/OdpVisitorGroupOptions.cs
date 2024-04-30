@@ -1,6 +1,8 @@
-﻿using EPiServer.ServiceLocation;
+﻿using System.Collections.Generic;
+using System.Linq;
+using EPiServer.ServiceLocation;
 
-namespace UNRVLD.ODP
+namespace UNRVLD.ODP.VisitorGroups.Configuration
 {
     /// <summary>
     /// Options class to set defaults but also allow these to be overridden in code/appsettings as needed. 
@@ -13,8 +15,19 @@ namespace UNRVLD.ODP
     ///        "OdpVisitorGroupOptions": {
     ///            "OdpCookieName": "vuid",
     ///            "CacheTimeoutSeconds": 10,
-    ///            "BaseEndPoint": "https:///api.zaius.com",
-    ///            "PrivateApiKey": "key-lives-here"
+    ///            "SchemaCacheTimeoutSeconds": 86400,
+    ///            "PopulationEstimateCacheTimeoutSeconds": 4320,
+    ///            "OdpEndpoints": [
+    ///             {
+    ///                 "Name": "US",
+    ///                 "BaseEndPoint": "https:///api.zaius.com",
+    ///                 "PrivateApiKey": "key-lives-here"
+    ///             },
+    ///             {
+    ///                 "Name": "EU",
+    ///                 "BaseEndPoint": "https:///api.zaius.eu",
+    ///                 "PrivateApiKey": "key-lives-here"
+    ///             }]
     ///        }
     ///    }
     ///}
@@ -26,7 +39,7 @@ namespace UNRVLD.ODP
         {
             OdpCookieName = "vuid";
             CacheTimeoutSeconds = 1;
-            BaseEndPoint = "https://api.zaius.com";
+            OdpEndpoints = [];
             SchemaCacheTimeoutSeconds = 86400;
             PopulationEstimateCacheTimeoutSeconds = 4320;
         }
@@ -41,11 +54,11 @@ namespace UNRVLD.ODP
         /// <summary>
         /// The private API key to access the ODP Api
         /// </summary>
-        public string PrivateApiKey { get; set; }
+        //public string PrivateApiKey { get; set; }
         /// <summary>
         /// API endpoint base, can vary by region ODP is deployed into
         /// </summary>
-        public string BaseEndPoint { get; set; }
+        //public string BaseEndPoint { get; set; }
         /// <summary>
         /// The length of time to cache schema responses for, can be relatively long lived and defaults to 24 hours
         /// </summary>
@@ -55,8 +68,16 @@ namespace UNRVLD.ODP
         /// </summary>
         public int PopulationEstimateCacheTimeoutSeconds { get; set; }
 
+        public List<OdpEndpoint> OdpEndpoints { get; set; }
+
         public bool IsConfigured => !(string.IsNullOrEmpty(OdpCookieName) ||
-                                    string.IsNullOrEmpty(BaseEndPoint) || 
-                                    string.IsNullOrEmpty(PrivateApiKey));
+                                      (OdpEndpoints?.Any(x => !x.IsConfigured) ?? false));
+
+        public bool HasMultipleEndpoints => OdpEndpoints?.Count > 1;
+
+        public OdpEndpoint? GetEndpoint(string? name)
+        {
+            return name is null ? OdpEndpoints.FirstOrDefault() : OdpEndpoints?.FirstOrDefault(x => x.Name == name);
+        }
     }
 }

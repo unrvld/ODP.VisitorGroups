@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using EPiServer.Personalization.VisitorGroups;
+using UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
@@ -13,14 +14,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
         )]
         [Required]
         [Display(Name = "Customer Property (number)")]
-        public string PropertyName { get; set; }
+        public string PropertyName { get; set; } = string.Empty;
 
         [CriterionPropertyEditor(
             Order = 20,
             SelectionFactoryType = typeof(NumberComparisonSelectionFactory)
         )]
         [Required]
-        public string Comparison { get; set; }
+        public string Comparison { get; set; } = string.Empty;
 
         [Required]
         [CriterionPropertyEditor(Order = 30)]

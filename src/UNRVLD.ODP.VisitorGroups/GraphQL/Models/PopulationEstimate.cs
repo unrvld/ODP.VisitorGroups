@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models.AudienceCount
+namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models
 {
     public class PopulationEstimate
     {

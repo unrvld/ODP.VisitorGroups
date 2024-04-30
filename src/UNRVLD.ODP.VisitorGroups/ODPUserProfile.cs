@@ -1,18 +1,14 @@
-﻿using System;
-
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
 
 namespace UNRVLD.ODP.VisitorGroups
 {
-    public class ODPUserProfile : IODPUserProfile
+    public class ODPUserProfile(OdpVisitorGroupOptions optionValues) : IODPUserProfile
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
-        public ODPUserProfile(OdpVisitorGroupOptions optionValues)
-        {
-            _optionValues = optionValues;
-        }
-        public string GetDeviceId(HttpContext httpContext)
+        private readonly OdpVisitorGroupOptions _optionValues = optionValues;
+
+        public string? GetDeviceId(HttpContext httpContext)
         {
             if (httpContext != null)
             {
@@ -23,11 +19,11 @@ namespace UNRVLD.ODP.VisitorGroups
             return null;
         }
 
-        private string GetVuidValueInternal(string vuidValue)
+        private string? GetVuidValueInternal(string? vuidValue)
         {
             if (!string.IsNullOrWhiteSpace(vuidValue) && vuidValue.Length > 35)
             {
-                return vuidValue.Substring(0, 36).Replace("-", string.Empty);
+                return vuidValue[..36].Replace("-", string.Empty);
             }
 
             return null;

@@ -1,45 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using IGraphQLClient = UNRVLD.ODP.VisitorGroups.GraphQL.IGraphQLClient;
 using Newtonsoft.Json;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
-using UNRVLD.ODP.VisitorGroups.GraphQL.Models.AudienceCount;
 using Audience = UNRVLD.ODP.VisitorGroups.GraphQL.Models.Audience;
 using EPiServer.Framework.Cache;
 using System.Threading.Tasks;
+using UNRVLD.ODP.VisitorGroups.GraphQL;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
+namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
     /// <inheritdoc/>
     public class AudienceSizeCachePopulator : IAudienceSizeCachePopulator
     {
-        private readonly IGraphQLClient _client;
+        private readonly IGraphQLClientFactory _clientFactory;
         private readonly ISynchronizedObjectInstanceCache _cache;
         private readonly OdpVisitorGroupOptions _options;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
 
-        public AudienceSizeCachePopulator(IGraphQLClient client, ISynchronizedObjectInstanceCache cache, OdpVisitorGroupOptions options)
+        public AudienceSizeCachePopulator(
+            IGraphQLClientFactory clientFactory,
+            ISynchronizedObjectInstanceCache cache,
+            OdpVisitorGroupOptions options)
         {
-            _client = client;
+            _clientFactory = clientFactory;
             _cache = cache;
             _options = options;
         }
+        /*
+                public void PopulateCacheItem(Audience Audience)
+                {
+                    try
+                    {
+                        var countQuery = GetAllCountsQuery([Audience]);
+                        var countResult = _client.Query<dynamic>(countQuery).Result;
+                        var countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult[Audience.Name].ToString());
 
-        public void PopulateCacheItem(Audience Audience)
-        {
-            try
-            {
-                var countQuery = GetAllCountsQuery(new List<Audience> { Audience });
-                var countResult = _client.Query<dynamic>(countQuery).Result;
-                var countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult[Audience.Name].ToString());
-
-                _cache.Insert(cacheKey + Audience.Name, countObject, new CacheEvictionPolicy(new TimeSpan(0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
-            }
-            catch { }
-        }
-
-        public async Task PopulateEntireCache(bool ForceRefresh)
+                        _cache.Insert(cacheKey + Audience.Name, countObject, new CacheEvictionPolicy(new TimeSpan(0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
+                    }
+                    catch { }
+                }
+        */
+        public async Task PopulateEntireCache(OdpEndpoint endPoint, bool ForceRefresh)
         {
             var query = @"query MyQuery {
                           audiences {
@@ -54,8 +57,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 
             try
             {
-                var result = await _client.Query<AudiencesResponse>(query);
-                var orderedResult = result.Items.OrderBy(x => x.Description);
+                var client = _clientFactory.Get(endPoint);
+                if (client == null)
+                {
+                    return;
+                }
+
+                var result = await client.Query<AudiencesResponse>(query);
+                var orderedResult = result?.Items.OrderBy(x => x.Description) ?? Enumerable.Empty<Audience>();
 
                 var skip = 0;
                 var pageSize = 10;
@@ -74,16 +83,16 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
                     }
 
                     var countQuery = GetAllCountsQuery(currentPageOfAudiences);
-                    var countResult = _client.Query<dynamic>(countQuery).Result;
+                    var countResult = client.Query<dynamic>(countQuery).Result;
 
                     var loopCount = 0;
-                    foreach (var audienceCount in countResult)
+                    foreach (var audienceCount in countResult ?? Enumerable.Empty<dynamic>())
                     {
                         var audience = orderedResult.Skip(skip + loopCount).Take(1).First();
-                        var countObject = JsonConvert.DeserializeObject<AudienceCount>((countResult[audience.Name].ToString()));
+                        var countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult?[audience.Name].ToString());
 
                         _cache.Insert(
-                            cacheKey + audience.Name,
+                            $"{cacheKey}-{endPoint.Name}-{audience.Name}",
                             countObject,
                             new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
 

@@ -2,37 +2,30 @@
 using EPiServer.Personalization.VisitorGroups;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 
-using Microsoft.AspNetCore.Http;
-
-
 using System.Security.Principal;
 using EPiServer.Framework.Cache;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 using UNRVLD.ODP.VisitorGroups.GraphQL.Models;
-using System.Linq;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     [VisitorGroupCriterion(
       Category = "Data platform",
       Description = "Matches the user to a specific segment",
       DisplayName = "Is In Segment"
         )]
-    public class AudienceCriterion : OdpCriterionBase<AudienceCriterionModel>
+    public class AudienceCriterion(IGraphQLClientFactory graphQLClientFactory,
+                            OdpVisitorGroupOptions optionValues,
+                            ISynchronizedObjectInstanceCache cache,
+                            IODPUserProfile odpUserProfile,
+                            IPrefixer prefixer) : OdpCriterionBase<AudienceCriterionModel>(odpUserProfile)
     {
-        private readonly IGraphQLClient _graphQlClient;
-        private readonly OdpVisitorGroupOptions _optionValues;
-        private readonly ISynchronizedObjectInstanceCache _cache;
-        public AudienceCriterion(IGraphQLClient graphQlClient,
-                                OdpVisitorGroupOptions optionValues,
-                                ISynchronizedObjectInstanceCache cache,
-                                IODPUserProfile odpUserProfile)
-            : base(odpUserProfile)
-        {
-            _graphQlClient = graphQlClient;
-            _optionValues = optionValues;
-            _cache = cache;
-        }
+        private readonly IGraphQLClientFactory _graphQLClientFactory = graphQLClientFactory;
+        private readonly OdpVisitorGroupOptions _optionValues = optionValues;
+        private readonly ISynchronizedObjectInstanceCache _cache = cache;
+        private readonly IPrefixer prefixer = prefixer;
+
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
@@ -44,7 +37,15 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    return IsInAudience(vuidValue, Model.Audience);
+                    if (_optionValues.HasMultipleEndpoints)
+                    {
+                        var splitPrefix = prefixer.SplitPrefix(Model.Audience);
+                    
+                        return IsInAudience(vuidValue,  splitPrefix.value, splitPrefix.prefix);
+                    } 
+                    else
+                        return IsInAudience(vuidValue, Model.Audience);
+
                 }
             }
             catch
@@ -53,7 +54,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             }
             return false;
         }
-        private bool IsInAudience(string vuidValue, string audience)
+        private bool IsInAudience(string vuidValue, string audience, string? endpointKey = null)
         {
             try
             {
@@ -76,8 +77,17 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                                       }}
                                     }}";
 
-                var result = _graphQlClient.Query<CustomerResponse>(query).Result;
-                var isInAudience = result.Customer.Response.EdgeItems?.Any() ?? false;
+                var isInAudience = false;
+
+                var odpEndPoint = _optionValues.GetEndpoint(endpointKey);
+
+                if (odpEndPoint is not null)
+                {
+                    var graphQlClient = _graphQLClientFactory.Get(odpEndPoint);
+                    var result = graphQlClient.Query<CustomerResponse>(query).Result;
+
+                    isInAudience = result?.Customer?.Response?.EdgeItems.Count == 0;
+                }
 
                 // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
                 _cache.Insert(

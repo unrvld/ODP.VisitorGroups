@@ -23,6 +23,8 @@
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+		<LangVersion>latest</LangVersion>
+		<nullable>Enable</nullable>
 		<RestoreSources>
 		  $(RestoreSources);
 		  https://api.nuget.org/v3/index.json;

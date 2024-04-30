@@ -3,11 +3,9 @@
 using System.Security.Principal;
 using Newtonsoft.Json.Linq;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
-
-using Microsoft.AspNetCore.Http;
-
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     [VisitorGroupCriterion(
         Category = "Data platform",
@@ -18,14 +16,17 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
+        private readonly IPrefixer _prefixer;
 
-        public CustomerPropertyNumberCriterion(OdpVisitorGroupOptions optionValues, 
+        public CustomerPropertyNumberCriterion(OdpVisitorGroupOptions optionValues,
                                                ICustomerDataRetriever customerDataRetriever,
-                                               IODPUserProfile odpUserProfile)
+                                               IODPUserProfile odpUserProfile,
+                                               IPrefixer prefixer)
             : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
+            _prefixer = prefixer;
         }
 
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
@@ -39,13 +40,15 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
+                    var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
+
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
                     if (customer == null)
                     {
                         return false;
                     }
-                    
-                    if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
+
+                    if (!customer.AdditionalFields.TryGetValue(splitPrefix.value, out var propertyToken))
                     {
                         return false;
                     }

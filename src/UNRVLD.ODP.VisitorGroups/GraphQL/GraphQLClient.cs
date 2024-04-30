@@ -2,6 +2,7 @@
 using GraphQL.Client.Serializer.Newtonsoft;
 using System;
 using System.Threading.Tasks;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
 namespace UNRVLD.ODP.VisitorGroups.GraphQL
 {
@@ -9,19 +10,20 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
     {
         private readonly string _apiKey;
         private readonly GraphQLHttpClient _graphQlClient;
-        private readonly OdpVisitorGroupOptions _options;
+        private readonly bool _isConfigured;
+
         private bool disposedValue;
 
-        public GraphQLClient(OdpVisitorGroupOptions options)
+        public GraphQLClient(OdpEndpoint endPoint)
         {
-            _apiKey = options.PrivateApiKey;
-            _options = options;
-            _graphQlClient = new GraphQLHttpClient(options.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
+            _apiKey = endPoint.PrivateApiKey;
+            _isConfigured = endPoint.IsConfigured;
+            _graphQlClient = new GraphQLHttpClient(endPoint.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
         }
 
-        public async Task<T> Query<T>(string query) where T : class
+        public async Task<T?> Query<T>(string query) where T : class
         {
-            if (!_options.IsConfigured)
+            if (!_isConfigured)
             {
                 return default;
             }

@@ -4,6 +4,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
     public interface ICustomerDataRetriever
     { 
-        Customer GetCustomerInfo(string vuidValue);
+        Customer? GetCustomerInfo(string vuidValue, string? endpointKey = null);
     }
 }

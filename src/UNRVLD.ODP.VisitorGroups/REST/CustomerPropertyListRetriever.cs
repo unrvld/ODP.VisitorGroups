@@ -1,46 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using System.Threading.Tasks;
 using EPiServer.Framework.Cache;
 using UNRVLD.ODP.VisitorGroups.REST.Models;
 
 using RestSharp;
 using System.Linq;
-using System.Threading;
+using UNRVLD.ODP.VisitorGroups.Configuration;
+using UNRVLD.ODP.VisitorGroups.Criteria;
 
 namespace UNRVLD.ODP.VisitorGroups.REST
 {
     public class CustomerPropertyListRetriever : ICustomerPropertyListRetriever, IDisposable
     {
-        private readonly RestClient _restClient;
         private readonly OdpVisitorGroupOptions _options;
         private readonly ISynchronizedObjectInstanceCache _cache;
+        private readonly IPrefixer _prefixer;
         private bool disposedValue;
 
-        public CustomerPropertyListRetriever(//RestClient restClient, 
+        public CustomerPropertyListRetriever(
             OdpVisitorGroupOptions options, 
-            ISynchronizedObjectInstanceCache cache)
+            ISynchronizedObjectInstanceCache cache,
+            IPrefixer prefixer)
         {
-            _restClient = new RestClient(options.BaseEndPoint);
             _options = options;
             _cache = cache;
+            _prefixer = prefixer;
         }
 
-        public IEnumerable<Field> GetCustomerProperties()
+        public IEnumerable<Field> GetCustomerProperties(string? endpointName)
         {
-            var cacheKey = $"odp_rts_customer_schema";
+            var cacheKey = $"odp_rts_customer_schema_{endpointName}";
             var cachedResult = _cache.Get(cacheKey);
             if (cachedResult != null)
             {
                 return (IEnumerable<Field>)cachedResult;
             }
 
-            var apiResult = GetCustomerPropertiesRequest();
+            List<Field> apiResult = [];
+
+            var endpoint = _options.GetEndpoint(endpointName);
+
+            if (endpoint != null)
+            {
+                var results = GetCustomerPropertiesRequest(_options.HasMultipleEndpoints, endpoint);
+
+                if (results != null && results.Count != 0)
+                {
+                    apiResult.AddRange(results);
+                }
+            }
 
             if (apiResult == null || !apiResult.Any())
             {
-                return Enumerable.Empty<Field>();
+                return [];
             }
 
             _cache.Insert(
@@ -52,16 +64,21 @@ namespace UNRVLD.ODP.VisitorGroups.REST
             return apiResult;
         }
 
-        private ICollection<Field> GetCustomerPropertiesRequest()
+        private ICollection<Field> GetCustomerPropertiesRequest(bool hasMultipleEndpoints, OdpEndpoint odpEndpoint)
         {
             try
             {
+                using var _restClient = new RestClient(new Uri(odpEndpoint.BaseEndPoint), useClientFactory: true);
+
                 var request = new RestRequest("/v3/schema/objects/customers");
-                request.AddHeader("x-api-key", _options.PrivateApiKey);
+                request.AddHeader("x-api-key", odpEndpoint.PrivateApiKey);
 
                 var response = _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
 
-                return response?.fields ?? Array.Empty<Field>();
+                response?.Fields.ToList().ForEach(x => x.DisplayName = hasMultipleEndpoints ? _prefixer.Prefix(x.DisplayName,odpEndpoint.Name ) : x.DisplayName);
+                response?.Fields.ToList().ForEach(x => x.Name = hasMultipleEndpoints ? _prefixer.Prefix(x.Name,odpEndpoint.Name ) : x.Name);
+        
+                return response?.Fields ?? Array.Empty<Field>();
             }
             catch
             {
@@ -76,8 +93,6 @@ namespace UNRVLD.ODP.VisitorGroups.REST
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects)
-
-                    _restClient.Dispose();
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer

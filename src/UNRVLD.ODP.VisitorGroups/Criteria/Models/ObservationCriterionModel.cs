@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EPiServer.Data.Dynamic;
 using EPiServer.Personalization.VisitorGroups;
+using UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
+    [EPiServerDataStore(AutomaticallyRemapStore = true)]
     public class ObservationCriterionModel : CriterionModelBase
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
@@ -10,19 +13,27 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 
         [CriterionPropertyEditor(
             Order = 10,
-            SelectionFactoryType = typeof(ObservationTypeSelectionFactory) 
+            SelectionFactoryType = typeof(OdpInstanceSelectionFactory)
         )]
-        [Required]
-        public string Observation { get; set; }
 
+        [Required]
+        public string InstanceName { get; set; } = string.Empty;
 
         [CriterionPropertyEditor(
             Order = 20,
+            SelectionFactoryType = typeof(ObservationTypeSelectionFactory) 
+        )]
+        [Required]
+        public string Observation { get; set; } = string.Empty;
+
+
+        [CriterionPropertyEditor(
+            Order = 30,
             SelectionFactoryType = typeof(NumberComparisonSelectionFactory)
         )]
 
         [Required]
-        public string Comparison { get; set; }
+        public string Comparison { get; set; } = string.Empty;
 
         [Required]
 

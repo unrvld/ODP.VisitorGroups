@@ -2,7 +2,7 @@
 {
     public class Edge<T>
     {
-        public T Node { get;set;}
-        public string Cursor { get;set;}
+        public T Node { get;set;} = default!;
+        public string Cursor { get;set;} = string.Empty;
     }
 }

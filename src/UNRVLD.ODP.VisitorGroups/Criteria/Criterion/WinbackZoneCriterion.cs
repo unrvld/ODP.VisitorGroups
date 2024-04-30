@@ -1,32 +1,29 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
 
-using Microsoft.AspNetCore.Http;
-
-
 using System.Security.Principal;
+using UNRVLD.ODP.VisitorGroups.Configuration;
+using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     [VisitorGroupCriterion(
         Category = "Data platform",
-        Description = "How likely is the user going to order (calculated every 24 hours)",
-        DisplayName = "Order Likelihood"
+        Description = "What winback state is the user in (calculated every 24 hours)",
+        DisplayName = "Winback zone"
     )]
-    public class OrderLikelihoodCriterion : OdpCriterionBase<OrderLikelihoodCriterionModel>
+    public class WinbackZoneCriterion : OdpCriterionBase<WinbackZoneCriterionModel>
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        
-        public OrderLikelihoodCriterion(OdpVisitorGroupOptions optionValues, 
-                                        ICustomerDataRetriever customerDataRetriever,
-                                        IODPUserProfile odpUserProfile)
+        public WinbackZoneCriterion(OdpVisitorGroupOptions optionValues,
+                            ICustomerDataRetriever customerDataRetriever,
+                            IODPUserProfile odpUserProfile)
             : base(odpUserProfile)
         {
             _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
         }
-
 
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
@@ -39,13 +36,13 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
                     if (customer == null)
                     {
                         return false;
                     }
 
-                    return customer.Insights?.OrderLikelihood == Model.OrderLikelihood;
+                    return customer.Insights?.WinbackZone == Model.WinbackZone;
                 }
             }
             catch

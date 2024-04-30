@@ -5,25 +5,21 @@ using Microsoft.AspNetCore.Http;
 
 
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     /// <summary>
     /// An abstract class for a visitor group criterion using strongly typed settings and automatically generated user interface
     /// </summary>
     /// <typeparam name="T">The type of model/settings to operate on.</typeparam>
-    public abstract class OdpCriterionBase<T> : CriterionBase<T>
+    public abstract class OdpCriterionBase<T>(IODPUserProfile odpUserProfile) : CriterionBase<T>
         where T : class, ICriterionModel, new()
     {
-        protected IODPUserProfile OdpUserProfile;
+        protected IODPUserProfile OdpUserProfile = odpUserProfile;
 
-        protected OdpCriterionBase(IODPUserProfile odpUserProfile)
-        {
-            OdpUserProfile = odpUserProfile;
-        }
         public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
         {
             var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
-            return this.IsMatchInner(principal, vuidValue);
+            return !string.IsNullOrEmpty(vuidValue) && IsMatchInner(principal, vuidValue);
         }
 
 

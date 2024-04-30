@@ -4,9 +4,10 @@ using Microsoft.AspNetCore.Http;
 
 
 using System.Security.Principal;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     [VisitorGroupCriterion(
         Category = "Data platform",
@@ -17,9 +18,9 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
-        
 
-        public ObservationCriterion(OdpVisitorGroupOptions optionValues, 
+
+        public ObservationCriterion(OdpVisitorGroupOptions optionValues,
                             ICustomerDataRetriever customerDataRetriever,
                             IODPUserProfile odpUserProfile)
             : base(odpUserProfile)
@@ -31,7 +32,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         public override bool IsMatch(IPrincipal principal, HttpContext httpContext)
         {
             var vuidValue = OdpUserProfile.GetDeviceId(httpContext);
-            return this.IsMatchInner(principal, vuidValue);
+            return !string.IsNullOrEmpty(vuidValue) && IsMatchInner(principal, vuidValue);
         }
 
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
@@ -45,7 +46,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
                     if (customer == null)
                     {
                         return false;

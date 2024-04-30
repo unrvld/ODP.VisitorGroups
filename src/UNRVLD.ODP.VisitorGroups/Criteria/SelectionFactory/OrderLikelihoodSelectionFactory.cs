@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
+namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
 {
     public class OrderLikelihoodSelectionFactory : ISelectionFactory
     {

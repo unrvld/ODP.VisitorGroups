@@ -1,10 +1,9 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-using Microsoft.AspNetCore.Http;
-
 using System.Security.Principal;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
     [VisitorGroupCriterion(
         Category = "Data platform",
@@ -16,7 +15,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
 
-        public EngagementRankCriterion(OdpVisitorGroupOptions optionValues, 
+        public EngagementRankCriterion(OdpVisitorGroupOptions optionValues,
                 ICustomerDataRetriever customerDataRetriever,
                 IODPUserProfile odpUserProfile)
             : base(odpUserProfile)
@@ -36,7 +35,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 if (!string.IsNullOrEmpty(vuidValue))
                 {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue);
+                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
                     if (customer == null)
                     {
                         return false;

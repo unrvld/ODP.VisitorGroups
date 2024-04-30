@@ -6,6 +6,6 @@ namespace UNRVLD.ODP.VisitorGroups
 {
     public interface IODPUserProfile
     {
-        string GetDeviceId(HttpContext httpContext);
+        string? GetDeviceId(HttpContext httpContext);
     }
 }

@@ -5,6 +5,6 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 {
     public interface ICustomerPropertyListRetriever
     {
-        IEnumerable<Field> GetCustomerProperties();
+        IEnumerable<Field> GetCustomerProperties(string? endpointName);
     }
 }
