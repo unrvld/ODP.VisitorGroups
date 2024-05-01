@@ -14,14 +14,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
     )]
     public class WinbackZoneCriterion : OdpCriterionBase<WinbackZoneCriterionModel>
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
         public WinbackZoneCriterion(OdpVisitorGroupOptions optionValues,
                             ICustomerDataRetriever customerDataRetriever,
                             IODPUserProfile odpUserProfile)
-            : base(odpUserProfile)
+            : base(optionValues,odpUserProfile)
         {
-            _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
         }
 
@@ -29,27 +27,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                if (_optionValues.IsConfigured == false)
-                {
-                    return false;
-                }
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
 
-                if (!string.IsNullOrEmpty(vuidValue))
-                {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
-
-                    return customer.Insights?.WinbackZone == Model.WinbackZone;
-                }
+                return customer?.Insights?.WinbackZone == Model.WinbackZone;
             }
             catch
             {
                 return false;
             }
-            return false;
         }
     }
 }

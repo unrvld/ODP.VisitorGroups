@@ -14,7 +14,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
     )]
     public class CustomerPropertyTextCriterion : OdpCriterionBase<CustomerPropertyTextCriterionModel>
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
         private readonly IPrefixer _prefixer;
 
@@ -22,9 +21,8 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
             ICustomerDataRetriever customerDataRetriever,
             IODPUserProfile odpUserProfile,
             IPrefixer prefixer)
-            : base(odpUserProfile)
+            : base(optionValues,odpUserProfile)
         {
-            _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
             _prefixer = prefixer;
         }
@@ -33,67 +31,59 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                if (_optionValues.IsConfigured == false)
+                var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
+
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
+                if (customer == null)
                 {
                     return false;
                 }
 
-                if (!string.IsNullOrEmpty(vuidValue))
+                if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
                 {
-                    var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
+                    return false;
+                }
 
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
+                var propertyValue = propertyToken?.Value<string>();
 
-                    if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
-                    {
-                        return false;
-                    }
+                switch (Model.Comparison)
+                {
+                    case "HasNoValue":
+                        return string.IsNullOrEmpty(propertyValue);
+                    case "HasValue":
+                        return !string.IsNullOrEmpty(propertyValue);
+                    case "Is":
+                        if (propertyValue != null)
+                        {
+                            return propertyValue.Equals(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                        }
 
-                    var propertyValue = propertyToken?.Value<string>();
+                        break;
+                    case "StartsWith":
+                        if (propertyValue != null)
+                        {
+                            return propertyValue.StartsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                        }
 
-                    switch (Model.Comparison)
-                    {
-                        case "HasNoValue":
-                            return string.IsNullOrEmpty(propertyValue);
-                        case "HasValue":
-                            return !string.IsNullOrEmpty(propertyValue);
-                        case "Is":
-                            if (propertyValue != null)
-                            {
-                                return propertyValue.Equals(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
-                            }
-
-                            break;
-                        case "StartsWith":
-                            if (propertyValue != null)
-                            {
-                                return propertyValue.StartsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
-                            }
-
-                            break;
-                        case "Contains":
-                            if (propertyValue != null)
-                            {
+                        break;
+                    case "Contains":
+                        if (propertyValue != null)
+                        {
 #if NET5_0_OR_GREATER
-                                return propertyValue.Contains(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                            return propertyValue.Contains(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
 #else
-                                return propertyValue.IndexOf(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                            return propertyValue.IndexOf(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase) >= 0;
 #endif
-                            }
+                        }
 
-                            break;
-                        case "EndsWith":
-                            if (propertyValue != null)
-                            {
-                                return propertyValue.EndsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
-                            }
+                        break;
+                    case "EndsWith":
+                        if (propertyValue != null)
+                        {
+                            return propertyValue.EndsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                        }
 
-                            break;
-                    }
+                        break;
                 }
             }
             catch

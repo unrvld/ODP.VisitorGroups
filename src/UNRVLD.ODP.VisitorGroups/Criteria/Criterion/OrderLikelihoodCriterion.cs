@@ -14,44 +14,29 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
     )]
     public class OrderLikelihoodCriterion : OdpCriterionBase<OrderLikelihoodCriterionModel>
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
 
         public OrderLikelihoodCriterion(OdpVisitorGroupOptions optionValues,
                                         ICustomerDataRetriever customerDataRetriever,
                                         IODPUserProfile odpUserProfile)
-            : base(odpUserProfile)
+            : base(optionValues,odpUserProfile)
         {
-            _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
         }
-
 
         protected override bool IsMatchInner(IPrincipal principal, string vuidValue)
         {
             try
             {
-                if (_optionValues.IsConfigured == false)
-                {
-                    return false;
-                }
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
 
-                if (!string.IsNullOrEmpty(vuidValue))
-                {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
-
-                    return customer.Insights?.OrderLikelihood == Model.OrderLikelihood;
-                }
+                return customer?.Insights?.OrderLikelihood == Model.OrderLikelihood;
+            
             }
             catch
             {
                 return false;
             }
-            return false;
         }
     }
 }

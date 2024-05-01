@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using Microsoft.Extensions.Options;
 using UNRVLD.ODP.VisitorGroups.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
 {
@@ -27,6 +27,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
         private readonly OdpVisitorGroupOptions options;
 
         private readonly IPrefixer prefexer;
+        private readonly ILogger<AudienciesSelectionFactory> _logger;
 
         public AudienciesSelectionFactory()
         {
@@ -35,7 +36,10 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
             options = ServiceLocator.Current.GetInstance<IOptions<OdpVisitorGroupOptions>>().Value;
             cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
             serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
-            prefexer = ServiceLocator.Current.GetInstance<IPrefixer>();           
+            prefexer = ServiceLocator.Current.GetInstance<IPrefixer>();  
+
+            _logger = ServiceLocator.Current.GetInstance<ILoggerFactory>().CreateLogger<AudienciesSelectionFactory>();
+
         }
 
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
@@ -66,8 +70,9 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
 
                 return selectItems;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while fetching audience details");
                 return [];
             }
         }
@@ -86,7 +91,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
             {
                 var cacheResult = cache.Get($"{cacheKey}-{endPoint.Name}-{audience.Name}");
 
-                //var textPrefix = hasMultipleEndpoints ? $"[{endPoint.Name}] - {audience.Description}" : audience.Description;
                 var textPrefix = hasMultipleEndpoints ? prefexer.Prefix(audience.Description, endPoint.Name) : audience.Description;
 
                 if (cacheResult != null)

@@ -7,21 +7,25 @@ using RestSharp;
 using System.Linq;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 using UNRVLD.ODP.VisitorGroups.Criteria;
+using Microsoft.Extensions.Logging;
 
 namespace UNRVLD.ODP.VisitorGroups.REST
 {
     public class CustomerPropertyListRetriever : ICustomerPropertyListRetriever, IDisposable
     {
+        private readonly ILogger<CustomerPropertyListRetriever> _logger;
         private readonly OdpVisitorGroupOptions _options;
         private readonly ISynchronizedObjectInstanceCache _cache;
         private readonly IPrefixer _prefixer;
         private bool disposedValue;
 
         public CustomerPropertyListRetriever(
+            ILogger<CustomerPropertyListRetriever> logger,
             OdpVisitorGroupOptions options, 
             ISynchronizedObjectInstanceCache cache,
             IPrefixer prefixer)
         {
+            _logger = logger;
             _options = options;
             _cache = cache;
             _prefixer = prefixer;
@@ -29,39 +33,46 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
         public IEnumerable<Field> GetCustomerProperties(string? endpointName)
         {
-            var cacheKey = $"odp_rts_customer_schema_{endpointName}";
-            var cachedResult = _cache.Get(cacheKey);
-            if (cachedResult != null)
-            {
-                return (IEnumerable<Field>)cachedResult;
-            }
-
-            List<Field> apiResult = [];
-
-            var endpoint = _options.GetEndpoint(endpointName);
-
-            if (endpoint != null)
-            {
-                var results = GetCustomerPropertiesRequest(_options.HasMultipleEndpoints, endpoint);
-
-                if (results != null && results.Count != 0)
+            try {
+                var cacheKey = $"odp_rts_customer_schema_{endpointName}";
+                var cachedResult = _cache.Get(cacheKey);
+                if (cachedResult != null)
                 {
-                    apiResult.AddRange(results);
+                    return (IEnumerable<Field>)cachedResult;
                 }
-            }
 
-            if (apiResult == null || !apiResult.Any())
+                List<Field> apiResult = [];
+
+                var endpoint = _options.GetEndpoint(endpointName);
+
+                if (endpoint != null)
+                {
+                    var results = GetCustomerPropertiesRequest(_options.HasMultipleEndpoints, endpoint);
+
+                    if (results != null && results.Count != 0)
+                    {
+                        apiResult.AddRange(results);
+                    }
+                }
+
+                if (apiResult == null || !apiResult.Any())
+                {
+                    return [];
+                }
+
+                _cache.Insert(
+                    cacheKey,
+                    apiResult,
+                    new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.SchemaCacheTimeoutSeconds),
+                        CacheTimeoutType.Absolute));
+
+                return apiResult;
+            }
+            catch (Exception ex)
             {
-                return [];
+                _logger.LogError(ex, "Error retrieving customer properties");
+                return Array.Empty<Field>();
             }
-
-            _cache.Insert(
-                cacheKey,
-                apiResult,
-                new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.SchemaCacheTimeoutSeconds),
-                    CacheTimeoutType.Absolute));
-
-            return apiResult;
         }
 
         private ICollection<Field> GetCustomerPropertiesRequest(bool hasMultipleEndpoints, OdpEndpoint odpEndpoint)
@@ -80,8 +91,9 @@ namespace UNRVLD.ODP.VisitorGroups.REST
         
                 return response?.Fields ?? Array.Empty<Field>();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error retrieving customer properties");
                 return Array.Empty<Field>();
             }
         }

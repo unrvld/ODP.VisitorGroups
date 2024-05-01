@@ -12,15 +12,13 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
     )]
     public class EngagementRankCriterion : OdpCriterionBase<EngagementRankCriterionModel>
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
 
         public EngagementRankCriterion(OdpVisitorGroupOptions optionValues,
                 ICustomerDataRetriever customerDataRetriever,
                 IODPUserProfile odpUserProfile)
-            : base(odpUserProfile)
+            : base(optionValues,odpUserProfile)
         {
-            _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
         }
 
@@ -28,27 +26,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                if (_optionValues.IsConfigured == false)
-                {
-                    return false;
-                }
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
 
-                if (!string.IsNullOrEmpty(vuidValue))
-                {
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
-
-                    return CompareMe(customer.Insights?.EngagementRank, Model.Comparison);
-                }
+                return CompareMe(customer?.Insights?.EngagementRank, Model.Comparison);
             }
             catch
             {
                 return false;
             }
-            return false;
         }
 
         private bool CompareMe(decimal? value, string comparison)
@@ -63,6 +48,8 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                 case "LessThan":
                     return value < Model.EngagementRank;
                 case "EqualTo":
+                    return value == Model.EngagementRank;
+                case "NotEqualTo":
                     return value == Model.EngagementRank;
                 case "GreaterThan":
                     return value > Model.EngagementRank;

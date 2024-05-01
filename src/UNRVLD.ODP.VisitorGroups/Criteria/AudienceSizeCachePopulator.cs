@@ -8,6 +8,7 @@ using EPiServer.Framework.Cache;
 using System.Threading.Tasks;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
@@ -15,33 +16,23 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     public class AudienceSizeCachePopulator : IAudienceSizeCachePopulator
     {
         private readonly IGraphQLClientFactory _clientFactory;
+        private readonly ILogger<AudienceSizeCachePopulator> _logger;
         private readonly ISynchronizedObjectInstanceCache _cache;
         private readonly OdpVisitorGroupOptions _options;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
 
         public AudienceSizeCachePopulator(
             IGraphQLClientFactory clientFactory,
+            ILogger<AudienceSizeCachePopulator> logger,
             ISynchronizedObjectInstanceCache cache,
             OdpVisitorGroupOptions options)
         {
             _clientFactory = clientFactory;
+            _logger = logger;
             _cache = cache;
             _options = options;
         }
-        /*
-                public void PopulateCacheItem(Audience Audience)
-                {
-                    try
-                    {
-                        var countQuery = GetAllCountsQuery([Audience]);
-                        var countResult = _client.Query<dynamic>(countQuery).Result;
-                        var countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult[Audience.Name].ToString());
 
-                        _cache.Insert(cacheKey + Audience.Name, countObject, new CacheEvictionPolicy(new TimeSpan(0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
-                    }
-                    catch { }
-                }
-        */
         public async Task PopulateEntireCache(OdpEndpoint endPoint, bool ForceRefresh)
         {
             var query = @"query MyQuery {
@@ -68,6 +59,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 var skip = 0;
                 var pageSize = 10;
+                
                 while (orderedResult.Skip(skip).Take(pageSize).ToList().Count > 0)
                 {
                     var currentPageOfAudiences = orderedResult.Skip(skip).Take(pageSize).ToList();
@@ -103,7 +95,9 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     skip += pageSize;
                 }
             }
-            catch (Exception) { }
+            catch (Exception ex) {
+                _logger.LogError(ex, "Error populating audience size");
+             }
         }
 
         private bool CheckCacheHit(IList<Audience> CurrentPageOfAudiences, int PageSize)

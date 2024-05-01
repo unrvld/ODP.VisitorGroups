@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Logging;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 
 namespace UNRVLD.ODP.VisitorGroups.GraphQL
@@ -8,6 +9,12 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
     {
         protected ConcurrentDictionary<string, IGraphQLClient> Clients = new();
         private bool disposedValue;
+        private readonly ILoggerFactory _loggerFactory;
+
+        public GraphQLClientFactory(ILoggerFactory loggerFactory)
+        {
+            _loggerFactory = loggerFactory;
+        }
 
         public IGraphQLClient Get(OdpEndpoint endPoint)
         {
@@ -16,7 +23,7 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
                 return client;
             }
 
-            var newClient = new GraphQLClient(endPoint);
+            var newClient = new GraphQLClient(endPoint, _loggerFactory.CreateLogger<GraphQLClient>());
             Clients.TryAdd(endPoint.Name, newClient);
 
             return newClient;

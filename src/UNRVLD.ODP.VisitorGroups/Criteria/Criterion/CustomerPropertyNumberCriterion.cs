@@ -14,7 +14,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
     )]
     public class CustomerPropertyNumberCriterion : OdpCriterionBase<CustomerPropertyNumberCriterionModel>
     {
-        private readonly OdpVisitorGroupOptions _optionValues;
         private readonly ICustomerDataRetriever _customerDataRetriever;
         private readonly IPrefixer _prefixer;
 
@@ -22,9 +21,8 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                                                ICustomerDataRetriever customerDataRetriever,
                                                IODPUserProfile odpUserProfile,
                                                IPrefixer prefixer)
-            : base(odpUserProfile)
+            : base(optionValues,odpUserProfile)
         {
-            _optionValues = optionValues;
             _customerDataRetriever = customerDataRetriever;
             _prefixer = prefixer;
         }
@@ -33,36 +31,27 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                if (_optionValues.IsConfigured == false)
+                var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
+
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
+                if (customer == null)
                 {
                     return false;
                 }
 
-                if (!string.IsNullOrEmpty(vuidValue))
+                if (!customer.AdditionalFields.TryGetValue(splitPrefix.value, out var propertyToken))
                 {
-                    var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
-
-                    var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
-                    if (customer == null)
-                    {
-                        return false;
-                    }
-
-                    if (!customer.AdditionalFields.TryGetValue(splitPrefix.value, out var propertyToken))
-                    {
-                        return false;
-                    }
-
-                    return decimal.TryParse(propertyToken?.Value<string>(), out var propertyValue) &&
-                           CompareMe(propertyValue, Model.Comparison);
+                    return false;
                 }
+
+                return decimal.TryParse(propertyToken?.Value<string>(), out var propertyValue) &&
+                        CompareMe(propertyValue, Model.Comparison);
+                
             }
             catch
             {
                 return false;
             }
-
-            return false;
         }
 
         private bool CompareMe(decimal value, string comparison)
@@ -73,6 +62,8 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                     return value < Model.PropertyValue;
                 case "EqualTo":
                     return value == Model.PropertyValue;
+                case "NotEqualTo":
+                    return value != Model.PropertyValue;
                 case "GreaterThan":
                     return value > Model.PropertyValue;
                 default:

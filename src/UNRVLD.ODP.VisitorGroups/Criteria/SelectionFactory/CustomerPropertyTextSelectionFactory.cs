@@ -43,7 +43,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
                 }
             }
 
-            return items.OrderBy(x => x.Text).ToList();
+            return [.. items.OrderBy(x => x.Text)];
         }
     }
 }
