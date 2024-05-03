@@ -19,7 +19,8 @@
 		        - Moved minimum .net framework requirements to v4.7.1
 				- Added support for .net7
 				- Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.
-		  2.0.0 - Added support for multiple ODP instances 
+		  2.0.0 - Removed support for CMS 11
+		        - Added support for multiple ODP instances 
 		        - Added support for .net8
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
