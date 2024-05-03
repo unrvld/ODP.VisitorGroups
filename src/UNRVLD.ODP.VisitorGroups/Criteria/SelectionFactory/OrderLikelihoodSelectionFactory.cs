@@ -11,11 +11,13 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
     {
         public IEnumerable<SelectListItem> GetSelectListItems(Type propertyType)
         {
-            IList<SelectListItem> items = new List<SelectListItem>();
-            items.Add(new SelectListItem() { Text = "Unlikely", Value = "Unlikely" });
-            items.Add(new SelectListItem() { Text = "Likely", Value = "Likely" });
-            items.Add(new SelectListItem() { Text = "Very Likely", Value = "VeryLikely" });
-            items.Add(new SelectListItem() { Text = "Extremely Likely", Value = "ExtremelyLikely" });
+            IList<SelectListItem> items =
+            [
+                new SelectListItem() { Text = "Unlikely", Value = "Unlikely" },
+                new SelectListItem() { Text = "Likely", Value = "Likely" },
+                new SelectListItem() { Text = "Very Likely", Value = "VeryLikely" },
+                new SelectListItem() { Text = "Extremely Likely", Value = "ExtremelyLikely" },
+            ];
 
             return items;
         }

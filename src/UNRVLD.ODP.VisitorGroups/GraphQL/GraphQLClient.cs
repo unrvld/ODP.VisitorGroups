@@ -1,5 +1,6 @@
 ﻿using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using UNRVLD.ODP.VisitorGroups.Configuration;
@@ -11,14 +12,15 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
         private readonly string _apiKey;
         private readonly GraphQLHttpClient _graphQlClient;
         private readonly bool _isConfigured;
-
+        private readonly ILogger<GraphQLClient> _logger;
         private bool disposedValue;
 
-        public GraphQLClient(OdpEndpoint endPoint)
+        public GraphQLClient(OdpEndpoint endPoint, ILogger<GraphQLClient> logger)
         {
-            _apiKey = endPoint.PrivateApiKey;
+            _apiKey = endPoint.PrivateApiKey.Trim();
             _isConfigured = endPoint.IsConfigured;
-            _graphQlClient = new GraphQLHttpClient(endPoint.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
+            _graphQlClient = new GraphQLHttpClient(endPoint.BaseEndPoint.Trim() + "/v3/graphql", new NewtonsoftJsonSerializer());
+            _logger = logger;
         }
 
         public async Task<T?> Query<T>(string query) where T : class
@@ -28,13 +30,18 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
                 return default;
             }
 
-            var request = new AuthencatedGraphQLHttpRequest(this._apiKey)
-            {
-                Query = query
-            };
+            try {
+                var request = new AuthencatedGraphQLHttpRequest(this._apiKey)
+                {
+                    Query = query
+                };
 
-            var response = await _graphQlClient.SendQueryAsync<T>(request);
-            return response.Data;
+                var response = await _graphQlClient.SendQueryAsync<T>(request);
+                return response.Data;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Error querying GraphQL");
+                throw;
+            }
         }
 
         protected virtual void Dispose(bool disposing)

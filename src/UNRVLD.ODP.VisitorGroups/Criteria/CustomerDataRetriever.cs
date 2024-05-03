@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Castle.Core.Logging;
 using EPiServer.Framework.Cache;
 using Microsoft.Extensions.Logging;
 using UNRVLD.ODP.VisitorGroups.Configuration;

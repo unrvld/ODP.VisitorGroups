@@ -4,7 +4,7 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 		<RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
-		<Version>1.4.0</Version>
+		<Version>2.0.0</Version>
 		<Authors>Andrew Markham; David Knipe</Authors>
 		<Owners>Made to Engage;UNRVLD</Owners>
 		<Title>UNRVLD - Optimizely Visitor Groups</Title>
@@ -19,6 +19,8 @@
 		        - Moved minimum .net framework requirements to v4.7.1
 				- Added support for .net7
 				- Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.
+		  2.0.0 - Added support for multiple ODP instances 
+		        - Added support for .net8
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
