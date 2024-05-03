@@ -1,10 +1,7 @@
 ﻿using EPiServer.Personalization.VisitorGroups;
 
-#if NET5_0_OR_GREATER
-#elif NET461_OR_GREATER
-#endif
-
 using System.ComponentModel.DataAnnotations;
+using UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
@@ -12,20 +9,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
     {
         public override ICriterionModel Copy() { return base.ShallowCopy(); }
 
-#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
                AfterTextTranslationKey = "/path/to/xml",
                LabelTranslationKey = "",
                Order = 1,
                SelectionFactoryType = typeof(AudienciesSelectionFactory)
             )]
-#elif NET461_OR_GREATER
-        [DojoWidget(
-              WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(AudienciesSelectionFactory))]
-#endif
         [Required]
 
-        public string Audience { get; set; }
+        public string Audience { get; set; } = string.Empty;
     }
 }

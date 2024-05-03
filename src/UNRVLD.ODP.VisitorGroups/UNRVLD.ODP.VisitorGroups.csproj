@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net472;net6.0;net7.0</TargetFrameworks>
+		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 		<RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
-		<Version>1.4.0</Version>
+		<Version>2.0.0</Version>
 		<Authors>Andrew Markham; David Knipe</Authors>
 		<Owners>Made to Engage;UNRVLD</Owners>
 		<Title>UNRVLD - Optimizely Visitor Groups</Title>
@@ -19,10 +19,14 @@
 		        - Moved minimum .net framework requirements to v4.7.1
 				- Added support for .net7
 				- Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.
+		  2.0.0 - Added support for multiple ODP instances 
+		        - Added support for .net8
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+		<LangVersion>latest</LangVersion>
+		<nullable>Enable</nullable>
 		<RestoreSources>
 		  $(RestoreSources);
 		  https://api.nuget.org/v3/index.json;
@@ -30,18 +34,7 @@
 	  </RestoreSources>
 		<PackageProjectUrl>https://github.com/made-to-engage/ODP.VisitorGroups</PackageProjectUrl>
 	</PropertyGroup>
-	<!-- Conditionally obtain references for the .NET Framework 4.0 target -->
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net472' ">
-		<Reference Include="System.Web" />
-		<PackageReference Include="EPiServer.Framework" Version="[11.18.1,12)" />
-		<PackageReference Include="EPiServer.Framework.AspNet" Version="[11.18.1,12)" />
-		<PackageReference Include="Microsoft.Extensions.Http" Version="[6.0.0,7)" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="[6.0.0,7)" />
-		<PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-		<PackageReference Include="GraphQL.Client" Version="4.0.2" />
-		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="4.0.2" />
-	</ItemGroup>
-	<ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' ">
+	<ItemGroup>
 		<PackageReference Include="EPiServer.Framework" Version="[12.0.3,13)" />
 		<PackageReference Include="EPiServer.Framework.AspNetCore" Version="[12.0.3,13)" />
 		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="[12.0.3,13)" />

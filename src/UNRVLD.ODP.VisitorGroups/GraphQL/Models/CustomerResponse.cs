@@ -2,10 +2,9 @@
 
 namespace UNRVLD.ODP.VisitorGroups.GraphQL.Models
 {
-    public class CustomerResponse //: GraphQL.ResponseType<Customer>
+    public class CustomerResponse
     {
         [JsonProperty("customer")] 
-        public Customer Customer { get; set; }
-        //public override GraphQL.Edges<Customer> Response { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

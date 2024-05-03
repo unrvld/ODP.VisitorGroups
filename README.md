@@ -1,11 +1,14 @@
 # Visitor Groups for Optimizely Data Platform
 
-Vistor groups for the Optimizely Data platform, supports Optimizely CMS 11 and 12.
+
+> If you are looking for documentation relevant to V1.* then please refer to the [legacy documentation](./docs/README-legacy.md).  This version supports Optimizely CMS 11 and 12.
 
 [![ODP Visitor Groups](https://github.com/made-to-engage/ODP.VisitorGroups/actions/workflows/build-visitor-groups.yml/badge.svg?branch=main)](https://github.com/made-to-engage/ODP.VisitorGroups/actions/workflows/build-visitor-groups.yml)
 
 
 ## Features
+
+Supports multiple ODP instances. 
 
 Visitor Groups for:
 - Real Time Segments
@@ -27,11 +30,9 @@ Install the package directly from the Optimizely Nuget repository.
 ``` 
 dotnet add package UNRVLD.ODP.VisitorGroups
 ```
-```
-Install-Package UNRVLD.ODP.VisitorGroups
-```
 
-## Configuration (.NET 5.0/6.0)
+
+## Configuration
 
 *Startup.cs*
 ``` c#
@@ -45,32 +46,26 @@ All settings are optional, apart from the PrivateApiKey
 {
    "EPiServer": {
       //Other config
-      "OdpVisitorGroupOptions": {
-         "OdpCookieName": "vuid",
-         "CacheTimeoutSeconds": 10,
-         "BaseEndPoint": "https://api.zaius.com",
-         "PrivateApiKey": "key-lives-here"
-       }
+    "OdpVisitorGroupOptions": {
+        "OdpCookieName": "vuid",
+        "CacheTimeoutSeconds": 10,
+        "SchemaCacheTimeoutSeconds": 86400,
+        "PopulationEstimateCacheTimeoutSeconds": 4320,
+        "OdpEndpoints": [
+          {
+              "Name": "US",  //Unique name for the instance
+              "BaseEndPoint": "https://api.zaius.com",
+              "PrivateApiKey": "..."
+          },
+          {
+              "Name": "EU",
+              "BaseEndPoint": "https://api.zaius.eu",
+              "PrivateApiKey": "..."
+          }]
+    }
    }
 }
 ```
-
-## Configuration (.Net Framework)
-
-
-*web.config*
-All settings are optional, apart from the PrivateApiKey
-``` xml
-  <appSettings>
-    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.OdpCookieName, UNRVLD.ODP.VisitorGroups" value="vuid" />
-    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.CacheTimeoutSeconds, UNRVLD.ODP.VisitorGroups" value="1" />
-    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.BaseEndPoint, UNRVLD.ODP.VisitorGroups" value="https://api.zaius.com" />
-    <add key="episerver:setoption:UNRVLD.ODP.OdpVisitorGroupOptions.PrivateApiKey, UNRVLD.ODP.VisitorGroups" value="key-lives-here" />
-  </appSettings>
-```
-
-You can also manage these with the [options admin module](https://world.optimizely.com/blogs/grzegorz-wiechec/dates/2020/3/configuring-options-from-admin-mode/) 
-
  ---
  ## Version History
 
@@ -82,4 +77,5 @@ You can also manage these with the [options admin module](https://world.optimize
  |1.1.2|Ensure Visitor Group UI doesn’t break if invalid or missing API key|
  |1.2.0|Adds counts to the segments, indicating the number of matching profiles|
  |1.3.0|Load the RTS segment count async|
- |1.4.0|Removed support for .net5<br/>Moved minimum .net framework requirements to v4.7.1<br/>Added support for .net7<br/>Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.|
+ |1.4.0|Removed support for .NET5<br/>Moved minimum .net framework requirements to v4.7.1<br/>Added support for .NET7<br/>Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.|
+ |2.0.0|Added support for .NET8<br/>Added support for multiple ODP instances |

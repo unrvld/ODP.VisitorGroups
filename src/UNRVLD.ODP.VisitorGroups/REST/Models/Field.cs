@@ -1,16 +1,20 @@
-﻿using Newtonsoft.Json;
+﻿
+using System.Text.Json.Serialization;
 
 namespace UNRVLD.ODP.VisitorGroups.REST.Models
 {
     public class Field
     {
-        [JsonProperty("name")]
-        public string name { get; set; }
-        [JsonProperty("display_name")]
-        public string display_name { get; set; }
-        [JsonProperty("description")]
-        public string description { get; set; }
-        [JsonProperty("type")]
-        public string type { get; set; }
+        [JsonPropertyName("name")]
+        public string Name { get; set; } = string.Empty;
+        
+        [JsonPropertyName("display_name")]
+        public string DisplayName { get; set; }= string.Empty;
+        
+        [JsonPropertyName("description")]
+        public string Description { get; set; }= string.Empty;
+        
+        [JsonPropertyName("type")]
+        public string Type { get; set; }= string.Empty;
     }
 }

@@ -1,25 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EPiServer.Data.Dynamic;
 using EPiServer.Personalization.VisitorGroups;
-using UNRVLD.ODP.VisitorGroups.Criteria.Models;
+using UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory;
 
-namespace UNRVLD.ODP.VisitorGroups.Criteria
+namespace UNRVLD.ODP.VisitorGroups.Criteria.Models
 {
+    [EPiServerDataStore(AutomaticallyRemapStore = true)]
     public class WinbackZoneCriterionModel : CriterionModelBase
     {
-        public override ICriterionModel Copy() { return base.ShallowCopy(); }
+        public override ICriterionModel Copy() { return ShallowCopy(); }
 
-#if NET5_0_OR_GREATER
         [CriterionPropertyEditor(
             Order = 10,
-            SelectionFactoryType = typeof(WinbackZoneSelectionFactory)
+            SelectionFactoryType = typeof(OdpInstanceSelectionFactory)
         )]
-#elif NET461_OR_GREATER
-        [DojoWidget(
-              WidgetType = "dijit.form.FilteringSelect",
-              SelectionFactoryType = typeof(WinbackZoneSelectionFactory))]
-#endif
 
         [Required]
-        public string WinbackZone { get; set; }
+        public string InstanceName { get; set; } = string.Empty;
+
+        [CriterionPropertyEditor(
+            Order = 20,
+            SelectionFactoryType = typeof(WinbackZoneSelectionFactory)
+        )]
+
+
+        [Required]
+        public string WinbackZone { get; set; } = string.Empty;
     }
 }

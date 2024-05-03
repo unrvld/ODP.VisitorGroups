@@ -1,7 +1,9 @@
 ﻿using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using UNRVLD.ODP.VisitorGroups.Configuration;
 
 namespace UNRVLD.ODP.VisitorGroups.GraphQL
 {
@@ -9,38 +11,37 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
     {
         private readonly string _apiKey;
         private readonly GraphQLHttpClient _graphQlClient;
-        private readonly OdpVisitorGroupOptions _options;
+        private readonly bool _isConfigured;
+        private readonly ILogger<GraphQLClient> _logger;
         private bool disposedValue;
 
-        public GraphQLClient(OdpVisitorGroupOptions options)
+        public GraphQLClient(OdpEndpoint endPoint, ILogger<GraphQLClient> logger)
         {
-            _apiKey = options.PrivateApiKey;
-            _options = options;
-            _graphQlClient = new GraphQLHttpClient(options.BaseEndPoint + "/v3/graphql", new NewtonsoftJsonSerializer());
+            _apiKey = endPoint.PrivateApiKey.Trim();
+            _isConfigured = endPoint.IsConfigured;
+            _graphQlClient = new GraphQLHttpClient(endPoint.BaseEndPoint.Trim() + "/v3/graphql", new NewtonsoftJsonSerializer());
+            _logger = logger;
         }
 
-        public async Task<T> Query<T>(string query) where T : class
+        public async Task<T?> Query<T>(string query) where T : class
         {
-            if (!_options.IsConfigured)
+            if (!_isConfigured)
             {
                 return default;
             }
 
-            var request = new AuthencatedGraphQLHttpRequest(this._apiKey)
-            {
-                Query = query
-            };
+            try {
+                var request = new AuthencatedGraphQLHttpRequest(this._apiKey)
+                {
+                    Query = query
+                };
 
-#if NET461_OR_GREATER
-            /* This is needed as the alternate code fails to complete, without an error.*/
-            var response461 = _graphQlClient.SendQueryAsync<T>(request);
-            Task.WaitAll(response461);
-
-            return response461.Result.Data;
-#elif NET5_0_OR_GREATER
-            var response = await _graphQlClient.SendQueryAsync<T>(request);
-            return response.Data;
-#endif
+                var response = await _graphQlClient.SendQueryAsync<T>(request);
+                return response.Data;
+            } catch (Exception ex) {
+                _logger.LogError(ex, "Error querying GraphQL");
+                throw;
+            }
         }
 
         protected virtual void Dispose(bool disposing)

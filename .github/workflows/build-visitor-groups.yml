@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 env:
-  BUILD_NO: 1.4.0.${{ github.run_number }}  
-  BUILD_NO_PRE: 1.4.0-rc.${{ github.run_number }} 
+  BUILD_NO: 2.0.0.${{ github.run_number }}  
+  BUILD_NO_PRE: 2.0.0-rc.${{ github.run_number }} 
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
         dotnet-version: |
             6.0.x
             7.0.x
-
+            8.0.x
     - name: Build (Production)
       if: github.ref == 'refs/heads/main'
       run: dotnet build --configuration Release -p:Version=${{ env.BUILD_NO }}
