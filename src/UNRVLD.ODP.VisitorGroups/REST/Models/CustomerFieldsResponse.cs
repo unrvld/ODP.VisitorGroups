@@ -1,10 +1,16 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace UNRVLD.ODP.VisitorGroups.REST.Models
 {
     public class CustomerFieldsResponse
     {
-        public ICollection<Field> fields { get; set; }
+
+        public CustomerFieldsResponse()
+        {
+            this.Fields = [];
+        }
+        [JsonPropertyName("fields")]
+        public ICollection<Field> Fields { get; set; }
     }
 }
