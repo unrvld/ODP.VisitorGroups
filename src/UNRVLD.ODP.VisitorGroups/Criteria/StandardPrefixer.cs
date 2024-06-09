@@ -21,7 +21,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             var match = prefixRegex.Match(value);
 
-            return match.Success ? (match.Groups[1].Value, match.Groups[2].Value) : (string.Empty, value);
+            return match.Success ? (match.Groups[1].Value, match.Groups[2].Value) : (null, value);
         }
     }
 }
