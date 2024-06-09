@@ -5,12 +5,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
     public class StandardPrefixer : IPrefixer
     {
-        private readonly Regex prefixRegex;
-
-        public StandardPrefixer()
-        {
-            prefixRegex = new Regex(@"^\[(.+)\] - (.+)$", RegexOptions.Compiled);
-        }
+        private static readonly Regex PrefixRegex = new(@"^\[(.+)\] - (.+)$", RegexOptions.Compiled);
 
         public string Prefix(string value, string prefix)
         {
@@ -19,9 +14,9 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
         public (string? prefix, string value) SplitPrefix(string value)
         {
-            var match = prefixRegex.Match(value);
+            var match = PrefixRegex.Match(value);
 
-            return match.Success ? (match.Groups[1].Value, match.Groups[2].Value) : (string.Empty, value);
+            return match.Success ? (match.Groups[1].Value, match.Groups[2].Value) : (null, value);
         }
     }
 }
