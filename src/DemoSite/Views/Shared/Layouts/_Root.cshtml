@@ -54,6 +54,17 @@
 
             // Edits to this script should only be made below this line.
             zaius.event('pageview');
+
+            zaius.customer({ // First object contains any known customer identifiers
+                    email: "johnny.zaius@zaius.com"
+                },{ // Second object contains customer attributes
+                    first_name: "Johnny",
+                    last_name: "Zaius",
+                    gender: "M",
+                    dob_year: 1980,
+                    dob_month: 1,
+                    dob_day: 1
+                });
         </script>
 
     @if (Model.Layout.IsInReadonlyMode)

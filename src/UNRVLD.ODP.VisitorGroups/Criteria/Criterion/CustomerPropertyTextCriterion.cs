@@ -39,12 +39,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                     return false;
                 }
 
-                if (!customer.AdditionalFields.TryGetValue(Model.PropertyName, out var propertyToken))
+                if (!customer.AdditionalFields.TryGetValue(splitPrefix.value, out var propertyToken))
                 {
                     return false;
                 }
 
-                var propertyValue = propertyToken?.Value<string>();
+                var propertyValue = propertyToken?.Value<string>()?.Trim();
 
                 switch (Model.Comparison)
                 {
@@ -55,14 +55,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                     case "Is":
                         if (propertyValue != null)
                         {
-                            return propertyValue.Equals(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                            return propertyValue.Equals(Model.PropertyValue.Trim(), StringComparison.CurrentCultureIgnoreCase);
                         }
 
                         break;
                     case "StartsWith":
                         if (propertyValue != null)
                         {
-                            return propertyValue.StartsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                            return propertyValue.StartsWith(Model.PropertyValue.Trim(), StringComparison.CurrentCultureIgnoreCase);
                         }
 
                         break;
@@ -70,9 +70,9 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                         if (propertyValue != null)
                         {
 #if NET5_0_OR_GREATER
-                            return propertyValue.Contains(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                            return propertyValue.Contains(Model.PropertyValue.Trim(), StringComparison.CurrentCultureIgnoreCase);
 #else
-                            return propertyValue.IndexOf(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase) >= 0;
+                            return propertyValue.IndexOf(Model.PropertyValue?.Trim(), StringComparison.CurrentCultureIgnoreCase) >= 0;
 #endif
                         }
 
@@ -80,7 +80,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                     case "EndsWith":
                         if (propertyValue != null)
                         {
-                            return propertyValue.EndsWith(Model.PropertyValue, StringComparison.CurrentCultureIgnoreCase);
+                            return propertyValue.EndsWith(Model.PropertyValue.Trim(), StringComparison.CurrentCultureIgnoreCase);
                         }
 
                         break;
