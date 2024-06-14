@@ -133,7 +133,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     var graphQlClient = _graphQLClientFactory.Get(odpEndPoint);
                     var result = graphQlClient.Query<CustomerResponse>(query).Result;
 
-                    isInAudience = result?.Customer?.Response?.EdgeItems.Count == 0;
+                    isInAudience = result?.Customer?.Response?.EdgeItems.Count == 1;
                 }
 
                 // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
