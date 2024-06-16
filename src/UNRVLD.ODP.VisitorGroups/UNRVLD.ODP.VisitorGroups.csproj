@@ -23,6 +23,7 @@
 		        - Added support for multiple ODP instances 
 		        - Added support for .net8
 		  2.0.2 - Fixed issue with Customer Property Text criteria not working
+		  2.0.4 - Fixed issue with Real Time Segment Audience not working
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
