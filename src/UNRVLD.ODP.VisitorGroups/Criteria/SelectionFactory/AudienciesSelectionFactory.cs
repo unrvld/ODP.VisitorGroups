@@ -26,7 +26,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
         private readonly IServiceScopeFactory serviceScopeFactory;
         private readonly OdpVisitorGroupOptions options;
 
-        private readonly IPrefixer prefexer;
+        private readonly IPrefixer prefixer;
         private readonly ILogger<AudienciesSelectionFactory> _logger;
 
         public AudienciesSelectionFactory()
@@ -36,7 +36,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
             options = ServiceLocator.Current.GetInstance<IOptions<OdpVisitorGroupOptions>>().Value;
             cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
             serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
-            prefexer = ServiceLocator.Current.GetInstance<IPrefixer>();  
+            prefixer = ServiceLocator.Current.GetInstance<IPrefixer>();  
 
             _logger = ServiceLocator.Current.GetInstance<ILoggerFactory>().CreateLogger<AudienciesSelectionFactory>();
 
@@ -91,15 +91,16 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
             {
                 var cacheResult = cache.Get($"{cacheKey}-{endPoint.Name}-{audience.Name}");
 
-                var textPrefix = hasMultipleEndpoints ? prefexer.Prefix(audience.Description, endPoint.Name) : audience.Description;
+                var textPrefix = hasMultipleEndpoints ? prefixer.Prefix(audience.Description, endPoint.Name) : audience.Description;
+                var value = hasMultipleEndpoints ?prefixer.Prefix(audience.Name, endPoint.Name) : audience.Name;
 
                 if (cacheResult != null)
                 {
-                    selectItems.Add(new SelectListItem() { Text = $"{textPrefix} {GetCountEstimateString((AudienceCount)cacheResult)}", Value = audience.Name });
+                    selectItems.Add(new SelectListItem() { Text = $"{textPrefix} {GetCountEstimateString((AudienceCount)cacheResult)}", Value = value });
                 }
                 else
                 {
-                    selectItems.Add(new SelectListItem() { Text = $"{textPrefix} (Calculating segment size...)", Value = audience.Name });
+                    selectItems.Add(new SelectListItem() { Text = $"{textPrefix} (Calculating segment size...)", Value = value });
                     if (cachePopulationRequested == false)
                     {
                         cachePopulationRequested = true;
@@ -114,7 +115,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
                             }
                             catch (Exception e)
                             {
-                                Console.WriteLine(e);
+                                 _logger.LogError(e, "Error getting audience details.");
                             }
                         });
                     }

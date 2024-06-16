@@ -4,7 +4,7 @@
 		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
 		<PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 		<RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
-		<Version>2.0.2</Version>
+		<Version>2.0.4</Version>
 		<Authors>Andrew Markham; David Knipe</Authors>
 		<Owners>Made to Engage;UNRVLD</Owners>
 		<Title>UNRVLD - Optimizely Visitor Groups</Title>
@@ -23,6 +23,7 @@
 		        - Added support for multiple ODP instances 
 		        - Added support for .net8
 		  2.0.2 - Fixed issue with Customer Property Text criteria not working
+		  2.0.4 - Fixed issue with Real Time Segment Audience not working
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
