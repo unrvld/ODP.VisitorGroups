@@ -13,6 +13,10 @@ namespace UNRVLD.ODP.VisitorGroups
             if (httpContext != null)
             {
                 var vuidValue = httpContext.Request.Cookies[_optionValues.OdpCookieName];
+                if (string.IsNullOrEmpty(vuidValue))
+                {
+                    vuidValue = httpContext.Request.Query["vuid"];
+                }
                 return GetVuidValueInternal(vuidValue);
             }
 
