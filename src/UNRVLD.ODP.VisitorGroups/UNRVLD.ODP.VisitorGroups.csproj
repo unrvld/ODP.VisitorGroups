@@ -25,7 +25,7 @@
 		  2.0.2 - Fixed issue with Customer Property Text criteria not working
 		  2.0.4 - Fixed issue with Real Time Segment Audience not working
 		  2.1.0 - Added support to get vuid from httprequest, this supports content delivery api
-		  2.1.1 - Fixed bug with to HTTPClient instantiation
+		  2.1.1 - Fixed bug with HTTPClient instantiation
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
