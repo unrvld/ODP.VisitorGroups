@@ -12,11 +12,14 @@ namespace UNRVLD.ODP.VisitorGroups.Initilization
         {
             services.AddHttpClient();
             
+            services.AddSingleton<IGraphQLClientFactory, GraphQLClientFactory>();
+
             services.AddScoped<IPrefixer, StandardPrefixer>();
-            services.AddScoped<IGraphQLClientFactory, GraphQLClientFactory>();
             services.AddScoped<ICustomerDataRetriever, CustomerDataRetriever>();
             services.AddScoped<ICustomerPropertyListRetriever, CustomerPropertyListRetriever>();
+
             services.AddHttpContextOrThreadScoped<IODPUserProfile, ODPUserProfile>();
+            
             services.AddTransient<IAudienceSizeCachePopulator, AudienceSizeCachePopulator>();
         }
     }

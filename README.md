@@ -79,3 +79,5 @@ All settings are optional, apart from the PrivateApiKey
  |1.3.0|Load the RTS segment count async|
  |1.4.0|Removed support for .NET5<br/>Moved minimum .net framework requirements to v4.7.1<br/>Added support for .NET7<br/>Updated minimum version of RestSharp as this caused issues when later versions of optimizely and visitor groups.|
  |2.0.0|Removed Support for CMS11<br/>Added support for .NET8<br/>Added support for multiple ODP instances |
+ |2.1.0|Added support to get vuid from httprequest, this supports content delivery api |
+ |2.1.1|Fixed bug with HTTPClient instantiation |

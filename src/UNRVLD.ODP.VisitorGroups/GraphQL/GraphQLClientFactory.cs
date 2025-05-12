@@ -16,18 +16,7 @@ namespace UNRVLD.ODP.VisitorGroups.GraphQL
             _loggerFactory = loggerFactory;
         }
 
-        public IGraphQLClient Get(OdpEndpoint endPoint)
-        {
-            if (Clients.TryGetValue(endPoint.Name, out var client))
-            {
-                return client;
-            }
-
-            var newClient = new GraphQLClient(endPoint, _loggerFactory.CreateLogger<GraphQLClient>());
-            Clients.TryAdd(endPoint.Name, newClient);
-
-            return newClient;
-        }
+        public IGraphQLClient Get(OdpEndpoint endPoint) => Clients.GetOrAdd(endPoint.Name, _ => new GraphQLClient(endPoint, _loggerFactory.CreateLogger<GraphQLClient>()));
 
         protected virtual void Dispose(bool disposing)
         {
