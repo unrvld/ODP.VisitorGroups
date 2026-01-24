@@ -81,3 +81,4 @@ All settings are optional, apart from the PrivateApiKey
  |2.0.0|Removed Support for CMS11<br/>Added support for .NET8<br/>Added support for multiple ODP instances |
  |2.1.0|Added support to get vuid from httprequest, this supports content delivery api |
  |2.1.1|Fixed bug with HTTPClient instantiation |
+ |2.2.0|Updated RestSharp veersion to 112.1.0 to address security vulnerability |
