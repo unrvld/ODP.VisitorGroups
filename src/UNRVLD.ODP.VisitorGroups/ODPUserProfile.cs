@@ -25,9 +25,13 @@ namespace UNRVLD.ODP.VisitorGroups
 
         private string? GetVuidValueInternal(string? vuidValue)
         {
-            if (!string.IsNullOrWhiteSpace(vuidValue) && vuidValue.Length > 35)
+            if (_optionValues.OdpCookieName == "vuid" && !string.IsNullOrWhiteSpace(vuidValue) && vuidValue.Length > 35)
             {
                 return vuidValue[..36].Replace("-", string.Empty);
+            }
+            else if (!string.IsNullOrWhiteSpace(vuidValue))
+            {
+                return vuidValue;
             }
 
             return null;
