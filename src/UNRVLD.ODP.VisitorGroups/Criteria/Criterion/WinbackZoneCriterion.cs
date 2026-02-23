@@ -18,7 +18,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         public WinbackZoneCriterion(OdpVisitorGroupOptions optionValues,
                             ICustomerDataRetriever customerDataRetriever,
                             IODPUserProfile odpUserProfile)
-            : base(optionValues,odpUserProfile)
+            : base(optionValues, odpUserProfile)
         {
             _customerDataRetriever = customerDataRetriever;
         }
@@ -27,7 +27,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, OptionValues.OdpIdQueryField, Model.InstanceName);
 
                 return customer?.Insights?.WinbackZone == Model.WinbackZone;
             }

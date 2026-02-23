@@ -17,7 +17,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         public EngagementRankCriterion(OdpVisitorGroupOptions optionValues,
                 ICustomerDataRetriever customerDataRetriever,
                 IODPUserProfile odpUserProfile)
-            : base(optionValues,odpUserProfile)
+            : base(optionValues, odpUserProfile)
         {
             _customerDataRetriever = customerDataRetriever;
         }
@@ -26,7 +26,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, OptionValues.OdpIdQueryField, Model.InstanceName);
 
                 return CompareMe(customer?.Insights?.EngagementRank, Model.Comparison);
             }

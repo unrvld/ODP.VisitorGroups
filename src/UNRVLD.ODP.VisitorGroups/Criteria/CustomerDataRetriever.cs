@@ -35,7 +35,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             _prefixer = prefixer;
         }
 
-        public Customer? GetCustomerInfo(string vuidValue, string? endpointKey = null)
+        public Customer? GetCustomerInfo(string vuidValue, string OdpIdQueryField, string? endpointKey = null)
         {
             try
             {
@@ -53,10 +53,10 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
 
                 var allFields = _customerPropertyListRetriever.GetCustomerProperties(endpointKey);
 
-                var allFieldsString = string.Join(Environment.NewLine, allFields.Select(x =>  _prefixer.SplitPrefix(x.Name).value));
+                var allFieldsString = string.Join(Environment.NewLine, allFields.Select(x => _prefixer.SplitPrefix(x.Name).value));
 
                 var query = $@"query MyQuery {{
-                                  customer(vuid: ""{vuidValue}"") {{
+                                  customer({OdpIdQueryField}: ""{vuidValue}"") {{
                                     {allFieldsString}
                                     observations {{
                                       total_revenue
@@ -71,7 +71,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                                   }}
                                 }}";
 
-                Customer? customer =  null;
+                Customer? customer = null;
                 var odpEndPoint = _optionValues.GetEndpoint(endpointKey);
 
                 if (odpEndPoint != null)
@@ -101,7 +101,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
             }
         }
 
-        public bool IsInAudience(string vuidValue, string audience, string? endpointKey = null)
+        public bool IsInAudience(string vuidValue, string OdpIdQueryField, string audience, string? endpointKey = null)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 }
 
                 var query = $@"query MyQuery {{
-                                      customer(vuid: ""{vuidValue}"") {{
+                                      customer({OdpIdQueryField}: ""{vuidValue}"") {{
                                         audiences (subset: [""{audience}""]) {{
                                           edges {{
                                             node {{

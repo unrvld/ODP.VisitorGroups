@@ -20,7 +20,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         public ObservationCriterion(OdpVisitorGroupOptions optionValues,
                             ICustomerDataRetriever customerDataRetriever,
                             IODPUserProfile odpUserProfile)
-            : base(optionValues,odpUserProfile)
+            : base(optionValues, odpUserProfile)
         {
             _customerDataRetriever = customerDataRetriever;
         }
@@ -29,7 +29,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         {
             try
             {
-                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, Model.InstanceName);
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, OptionValues.OdpIdQueryField, Model.InstanceName);
 
                 var isMatch = false;
                 switch (Model.Observation)
@@ -46,7 +46,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                 }
 
                 return isMatch;
-                
+
             }
             catch
             {

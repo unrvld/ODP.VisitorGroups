@@ -32,12 +32,12 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                 if (OptionValues.HasMultipleEndpoints)
                 {
                     var splitPrefix = _prefixer.SplitPrefix(Model.Audience);
-                
-                    return _customerDataRetriever.IsInAudience(vuidValue,  splitPrefix.value, splitPrefix.prefix);
-                } 
+
+                    return _customerDataRetriever.IsInAudience(vuidValue, OptionValues.OdpIdQueryField, splitPrefix.prefix);
+                }
                 else
                 {
-                    return _customerDataRetriever.IsInAudience(vuidValue, Model.Audience);
+                    return _customerDataRetriever.IsInAudience(vuidValue, OptionValues.OdpIdQueryField, Model.Audience);
                 }
             }
             catch
@@ -45,6 +45,6 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                 return false;
             }
         }
- 
+
     }
 }
