@@ -33,7 +33,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
                 {
                     var splitPrefix = _prefixer.SplitPrefix(Model.Audience);
 
-                    return _customerDataRetriever.IsInAudience(vuidValue, OptionValues.OdpIdQueryField, splitPrefix.prefix);
+                    return _customerDataRetriever.IsInAudience(vuidValue, OptionValues.OdpIdQueryField, splitPrefix.value, splitPrefix.prefix);
                 }
                 else
                 {
