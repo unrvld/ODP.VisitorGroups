@@ -14,6 +14,7 @@ namespace UNRVLD.ODP.VisitorGroups.Configuration
     ///        //Other config
     ///        "OdpVisitorGroupOptions": {
     ///            "OdpCookieName": "vuid",
+    ///            "OdpIdQueryField": "vuid",
     ///            "CacheTimeoutSeconds": 10,
     ///            "SchemaCacheTimeoutSeconds": 86400,
     ///            "PopulationEstimateCacheTimeoutSeconds": 4320,
@@ -38,6 +39,7 @@ namespace UNRVLD.ODP.VisitorGroups.Configuration
         public OdpVisitorGroupOptions()
         {
             OdpCookieName = "vuid";
+            OdpIdQueryField = "vuid";
             CacheTimeoutSeconds = 1;
             OdpEndpoints = [];
             SchemaCacheTimeoutSeconds = 86400;
@@ -47,6 +49,10 @@ namespace UNRVLD.ODP.VisitorGroups.Configuration
         /// The cookie name of the ODP cookie, should nearly always be "vuid"
         /// </summary>
         public string OdpCookieName { get; set; }
+        /// <summary>
+        /// The ODP query field used to query the cookie value, should nearly always be "vuid"
+        /// </summary>
+        public string OdpIdQueryField { get; set; }
         /// <summary>
         /// The length of time to micro-cache responses for, used to avoid multiple API hits in a single request
         /// </summary>

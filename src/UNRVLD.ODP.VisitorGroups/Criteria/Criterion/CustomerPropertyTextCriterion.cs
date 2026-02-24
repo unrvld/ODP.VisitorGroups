@@ -21,7 +21,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
             ICustomerDataRetriever customerDataRetriever,
             IODPUserProfile odpUserProfile,
             IPrefixer prefixer)
-            : base(optionValues,odpUserProfile)
+            : base(optionValues, odpUserProfile)
         {
             _customerDataRetriever = customerDataRetriever;
             _prefixer = prefixer;
@@ -33,7 +33,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
             {
                 var splitPrefix = _prefixer.SplitPrefix(Model.PropertyName);
 
-                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, splitPrefix.prefix);
+                var customer = _customerDataRetriever.GetCustomerInfo(vuidValue, OptionValues.OdpIdQueryField, splitPrefix.prefix);
                 if (customer == null)
                 {
                     return false;

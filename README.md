@@ -48,6 +48,7 @@ All settings are optional, apart from the PrivateApiKey
       //Other config
     "OdpVisitorGroupOptions": {
         "OdpCookieName": "vuid",
+        "OdpIdQueryField": "vuid",
         "CacheTimeoutSeconds": 10,
         "SchemaCacheTimeoutSeconds": 86400,
         "PopulationEstimateCacheTimeoutSeconds": 4320,
@@ -82,3 +83,4 @@ All settings are optional, apart from the PrivateApiKey
  |2.1.0|Added support to get vuid from httprequest, this supports content delivery api |
  |2.1.1|Fixed bug with HTTPClient instantiation |
  |2.2.0|Updated RestSharp veersion to 112.1.0 to address security vulnerability |
+ |2.3.0|Added support to set ODP ID field to query via OdpIdQueryField config value |
