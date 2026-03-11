@@ -42,6 +42,9 @@ services.AddODPVisitorGroups();
 
 *appsettings.json*
 All settings are optional, apart from the PrivateApiKey
+
+Note: refer to [Optimizely's documentation](https://docs.developers.optimizely.com/optimizely-data-platform/reference/introduction#rest-api) for correct BaseEndPoint value for different ODP regions. Values below are examples.
+
 ``` json
 {
    "EPiServer": {
