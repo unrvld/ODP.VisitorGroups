@@ -5,6 +5,7 @@ using System.Security.Principal;
 using EPiServer.Framework.Cache;
 using UNRVLD.ODP.VisitorGroups.Criteria.Models;
 using UNRVLD.ODP.VisitorGroups.Configuration;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
 {
@@ -15,13 +16,13 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.Criterion
         )]
     public class AudienceCriterion(IGraphQLClientFactory graphQLClientFactory,
                             OdpVisitorGroupOptions optionValues,
-                            ISynchronizedObjectInstanceCache cache,
+                            IMemoryCache cache,
                             IODPUserProfile odpUserProfile,
                             ICustomerDataRetriever customerDataRetriever,
                             IPrefixer prefixer) : OdpCriterionBase<AudienceCriterionModel>(optionValues, odpUserProfile)
     {
         private readonly IGraphQLClientFactory _graphQLClientFactory = graphQLClientFactory;
-        private readonly ISynchronizedObjectInstanceCache _cache = cache;
+        private readonly IMemoryCache _cache = cache;
         private readonly ICustomerDataRetriever _customerDataRetriever = customerDataRetriever;
         private readonly IPrefixer _prefixer = prefixer;
 

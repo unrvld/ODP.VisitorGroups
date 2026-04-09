@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
 		<PackageId>UNRVLD.ODP.VisitorGroups</PackageId>
 		<RepositoryUrl>https://github.com/made-to-engage/ODP.VisitorGroups</RepositoryUrl>
-		<Version>2.3.0</Version>
+		<Version>2.4.0</Version>
 		<Authors>Andrew Markham; David Knipe</Authors>
 		<Owners>Made to Engage;UNRVLD</Owners>
 		<Title>UNRVLD - Optimizely Visitor Groups</Title>
@@ -28,6 +28,7 @@
 		  2.1.1 - Fixed bug with HTTPClient instantiation
 		  2.2.0 - Updated RestSharp veersion to 112.1.0 to address security vulnerability
 		  2.3.0 - Added support to set ODP ID field to query via OdpIdQueryField config value
+		  2.4.0 - Added support for .net10, CMS13.  Removed support for .net6 and .net7.
 	  </ReleaseNotes>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -42,9 +43,9 @@
 		<PackageProjectUrl>https://github.com/made-to-engage/ODP.VisitorGroups</PackageProjectUrl>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="EPiServer.Framework" Version="[12.0.3,13)" />
-		<PackageReference Include="EPiServer.Framework.AspNetCore" Version="[12.0.3,13)" />
-		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="[12.0.3,13)" />
+		<PackageReference Include="EPiServer.Framework" Version="[12.0.3,14)" />
+		<PackageReference Include="EPiServer.Framework.AspNetCore" Version="[12.0.3,14)" />
+		<PackageReference Include="EPiServer.CMS.AspNetCore" Version="[12.0.3,14)" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="GraphQL.Client" Version="6.0.0" />
 		<PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="6.0.0" />

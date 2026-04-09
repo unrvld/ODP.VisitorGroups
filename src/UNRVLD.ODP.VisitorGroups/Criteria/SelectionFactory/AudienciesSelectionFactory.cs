@@ -14,13 +14,14 @@ using UNRVLD.ODP.VisitorGroups.GraphQL;
 using Microsoft.Extensions.Options;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
 {
     public class AudienciesSelectionFactory : ISelectionFactory
     {
         private readonly IGraphQLClientFactory clientFactory;
-        private readonly ISynchronizedObjectInstanceCache cache;
+        private readonly IMemoryCache cache;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
 
         private readonly IServiceScopeFactory serviceScopeFactory;
@@ -34,7 +35,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria.SelectionFactory
             clientFactory = ServiceLocator.Current.GetInstance<IGraphQLClientFactory>();
 
             options = ServiceLocator.Current.GetInstance<IOptions<OdpVisitorGroupOptions>>().Value;
-            cache = ServiceLocator.Current.GetInstance<ISynchronizedObjectInstanceCache>();
+            cache = ServiceLocator.Current.GetInstance<IMemoryCache>();
             serviceScopeFactory = ServiceLocator.Current.GetInstance<IServiceScopeFactory>();
             prefixer = ServiceLocator.Current.GetInstance<IPrefixer>();  
 

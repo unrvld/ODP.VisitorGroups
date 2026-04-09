@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace UNRVLD.ODP.VisitorGroups.Criteria
 {
@@ -17,14 +18,14 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
     {
         private readonly IGraphQLClientFactory _clientFactory;
         private readonly ILogger<AudienceSizeCachePopulator> _logger;
-        private readonly ISynchronizedObjectInstanceCache _cache;
+        private readonly IMemoryCache _cache;
         private readonly OdpVisitorGroupOptions _options;
         private string cacheKey = "OdpVisitorGroups_AudienceList_";
 
         public AudienceSizeCachePopulator(
             IGraphQLClientFactory clientFactory,
             ILogger<AudienceSizeCachePopulator> logger,
-            ISynchronizedObjectInstanceCache cache,
+            IMemoryCache cache,
             OdpVisitorGroupOptions options)
         {
             _clientFactory = clientFactory;
@@ -60,10 +61,10 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 var skip = 0;
                 var pageSize = 10;
                 
-                while (orderedResult.Skip(skip).Take(pageSize).ToList().Count > 0)
+                var currentPageOfAudiences = orderedResult.Skip(skip).Take(pageSize).ToList();
+                
+                while (currentPageOfAudiences.Count > 0)
                 {
-                    var currentPageOfAudiences = orderedResult.Skip(skip).Take(pageSize).ToList();
-
                     // Getting the estimate is expensive so skip if we have everything in the cache already (unless we are forcing a refresh)
                     if (ForceRefresh == false)
                     {
@@ -81,18 +82,23 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     foreach (var audienceCount in countResult ?? Enumerable.Empty<dynamic>())
                     {
                         var audience = orderedResult.Skip(skip + loopCount).Take(1).First();
-                        var countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult?[audience.Name].ToString());
+                        AudienceCount? countObject = JsonConvert.DeserializeObject<AudienceCount>(countResult?[audience.Name].ToString());
 
-                        _cache.Insert(
+                        _cache.Set(
                             $"{cacheKey}-{endPoint.Name}-{audience.Name}",
                             countObject,
-                            new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.PopulationEstimateCacheTimeoutSeconds), CacheTimeoutType.Absolute));
+                            new MemoryCacheEntryOptions
+                            {
+                                AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.PopulationEstimateCacheTimeoutSeconds)
+                            });
 
 
                         loopCount++;
                     }
 
                     skip += pageSize;
+
+                    currentPageOfAudiences = [.. orderedResult.Skip(skip).Take(pageSize)];
                 }
             }
             catch (Exception ex) {

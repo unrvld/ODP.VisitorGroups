@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using EPiServer.Framework.Cache;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 using UNRVLD.ODP.VisitorGroups.GraphQL;
@@ -15,7 +16,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         private readonly IGraphQLClientFactory _graphQLClientFactory;
         private readonly ILogger<CustomerDataRetriever> _logger;
         private readonly OdpVisitorGroupOptions _optionValues;
-        private readonly ISynchronizedObjectInstanceCache _cache;
+        private readonly IMemoryCache _cache;
 
         private readonly ICustomerPropertyListRetriever _customerPropertyListRetriever;
         private readonly IPrefixer _prefixer;
@@ -23,7 +24,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         public CustomerDataRetriever(IGraphQLClientFactory graphQLClientFactory,
             ILogger<CustomerDataRetriever> logger,
             OdpVisitorGroupOptions optionValues,
-            ISynchronizedObjectInstanceCache cache,
+            IMemoryCache cache,
             ICustomerPropertyListRetriever customerPropertyListRetriever,
             IPrefixer prefixer)
         {
@@ -44,7 +45,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                     return null;
                 }
 
-                var cacheKey = $"odp_rts_customer_{vuidValue}";
+                var cacheKey = $"odp_rts_customer_{vuidValue}_{endpointKey ?? string.Empty}";
                 var cachedResult = _cache.Get(cacheKey);
                 if (cachedResult != null)
                 {
@@ -85,11 +86,13 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 if (customer != null)
                 {
                     // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
-                    _cache.Insert(
+                    _cache.Set(
                         cacheKey,
                         customer,
-                        new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _optionValues.CacheTimeoutSeconds),
-                            CacheTimeoutType.Absolute));
+                        new MemoryCacheEntryOptions
+                        {
+                            AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_optionValues.CacheTimeoutSeconds)
+                        });
                 }
 
                 return customer;
@@ -105,7 +108,7 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
         {
             try
             {
-                var cacheKey = $"odp_rts_{vuidValue}_{audience}";
+                var cacheKey = $"odp_rts_{vuidValue}_{audience}_{endpointKey ?? string.Empty}";
                 var cachedResult = _cache.Get(cacheKey);
                 if (cachedResult != null)
                 {
@@ -137,15 +140,19 @@ namespace UNRVLD.ODP.VisitorGroups.Criteria
                 }
 
                 // Use a micro cache approach to improve performance if the same VG is used multiple times on a page
-                _cache.Insert(
+                _cache.Set(
                     cacheKey,
                     isInAudience,
-                    new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _optionValues.CacheTimeoutSeconds), CacheTimeoutType.Absolute));
+                    new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_optionValues.CacheTimeoutSeconds)
+                    });
 
                 return isInAudience;
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, "Error checking audience membership");
                 return false;
             }
         }

@@ -8,6 +8,7 @@ using System.Linq;
 using UNRVLD.ODP.VisitorGroups.Configuration;
 using UNRVLD.ODP.VisitorGroups.Criteria;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace UNRVLD.ODP.VisitorGroups.REST
 {
@@ -15,14 +16,14 @@ namespace UNRVLD.ODP.VisitorGroups.REST
     {
         private readonly ILogger<CustomerPropertyListRetriever> _logger;
         private readonly OdpVisitorGroupOptions _options;
-        private readonly ISynchronizedObjectInstanceCache _cache;
+        private readonly IMemoryCache _cache;
         private readonly IPrefixer _prefixer;
         private bool disposedValue;
 
         public CustomerPropertyListRetriever(
             ILogger<CustomerPropertyListRetriever> logger,
             OdpVisitorGroupOptions options, 
-            ISynchronizedObjectInstanceCache cache,
+            IMemoryCache cache,
             IPrefixer prefixer)
         {
             _logger = logger;
@@ -60,18 +61,20 @@ namespace UNRVLD.ODP.VisitorGroups.REST
                     return [];
                 }
 
-                _cache.Insert(
+                _cache.Set(
                     cacheKey,
                     apiResult,
-                    new CacheEvictionPolicy(new TimeSpan(0, 0, 0, _options.SchemaCacheTimeoutSeconds),
-                        CacheTimeoutType.Absolute));
+                    new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(_options.SchemaCacheTimeoutSeconds)
+                    });
 
                 return apiResult;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving customer properties");
-                return Array.Empty<Field>();
+                return [];
             }
         }
 
@@ -86,9 +89,14 @@ namespace UNRVLD.ODP.VisitorGroups.REST
 
                 var response = _restClient.GetAsync<CustomerFieldsResponse>(request).Result;
 
-                response?.Fields.ToList().ForEach(x => x.DisplayName = hasMultipleEndpoints ? _prefixer.Prefix(x.DisplayName,odpEndpoint.Name ) : x.DisplayName);
-                response?.Fields.ToList().ForEach(x => x.Name = hasMultipleEndpoints ? _prefixer.Prefix(x.Name,odpEndpoint.Name ) : x.Name);
-        
+                if (response?.Fields != null && hasMultipleEndpoints)
+                {
+                    foreach (var field in response.Fields)
+                    {
+                        field.DisplayName = _prefixer.Prefix(field.DisplayName, odpEndpoint.Name);
+                        field.Name = _prefixer.Prefix(field.Name, odpEndpoint.Name);
+                    }
+                }
                 return response?.Fields ?? Array.Empty<Field>();
             }
             catch (Exception ex)

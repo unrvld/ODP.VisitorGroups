@@ -87,3 +87,4 @@ Note: refer to [Optimizely's documentation](https://docs.developers.optimizely.c
  |2.1.1|Fixed bug with HTTPClient instantiation |
  |2.2.0|Updated RestSharp veersion to 112.1.0 to address security vulnerability |
  |2.3.0|Added support to set ODP ID field to query via OdpIdQueryField config value |
+ |2.4.0|Added support for .net10, CMS13.  Removed support for .net6 and .net7. |
