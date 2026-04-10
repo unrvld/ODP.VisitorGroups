@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>6c60e3f7-4df7-4ad1-9d9b-df8b9d57837b</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="EPiServer" />
+    <Using Include="EPiServer.Core" />
+    <Using Include="EPiServer.DataAbstraction" />
+    <Using Include="EPiServer.DataAnnotations" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="EPiServer.CMS" Version="13.0.0" />
+    <PackageReference Include="EPiServer.Cache" Version="13.0.0" />
+    <PackageReference Include="EPiServer.CMS.UI.AspNetIdentity" Version="13.0.0" />
+    <PackageReference Include="Optimizely.Graph.Cms" Version="13.0.0" />
+    <PackageReference Include="EPiServer.Cms.UI.ContentManager" Version="13.0.0" />
+    <PackageReference Include="EPiServer.Cms.UI.VisitorGroups" Version="13.0.0" />
+
+    <PackageReference Include="Wangkanai.Detection" Version="8.7.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Translations\**\*" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="../UNRVLD.ODP.VisitorGroups/UNRVLD.ODP.VisitorGroups.csproj" />
+  </ItemGroup>
+
+</Project>

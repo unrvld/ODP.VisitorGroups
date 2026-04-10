@@ -4,12 +4,12 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-                {
+        {
             "name": "Demo Site",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/src/DemoSite/bin/Debug/net6.0/DemoSite.dll",
+            "program": "${workspaceFolder}/src/DemoSite/bin/Debug/net8.0/DemoSite.dll",
             "args": [],
             "cwd": "${workspaceFolder}/src/DemoSite",
             "stopAtEntry": false,
@@ -22,6 +22,26 @@
             },
             "sourceFileMap": {
                 "/Views": "${workspaceFolder}/src/DemoSite/Views"
+            }
+        },
+        {
+            "name": "CMS13",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build13",
+            "program": "${workspaceFolder}/src/CMS13/bin/Debug/net10.0/alloy13preview.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/src/CMS13",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            },
+            "sourceFileMap": {
+                "/Views": "${workspaceFolder}/src/CMS13/Views"
             }
         }
     ]
